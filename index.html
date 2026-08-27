@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>菊池観光協会 予約・チケット プロトタイプ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Old+Mincho:wght@400;700;900&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0F2621;--ink-2:#183A32;--moss:#4A6B52;
+  --amber:#E0A14B;--amber-soft:#F6E2C2;
+  --paper:#F1F4F0;--paper-2:#FFFFFF;--line:#D6DDD6;
+  --text:#1C2A26;--dim:#5E6E68;--alert:#A63D2F;
+  --mincho:"Zen Old Mincho",serif;--gothic:"Zen Kaku Gothic New",sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--gothic);background:var(--ink);color:var(--text);line-height:1.7;
+  padding:22px 14px 60px;display:flex;flex-direction:column;align-items:center;gap:18px}
+.hd{text-align:center;max-width:480px;color:var(--amber-soft);font-family:var(--mincho)}
+.hd h1{font-size:18px;font-weight:700;letter-spacing:.04em}
+.hd p{font-family:var(--gothic);font-size:12px;color:#B7CBC2;margin-top:5px}
+.tabs{display:flex;gap:5px;background:rgba(255,255,255,.07);padding:5px;border-radius:12px;flex-wrap:wrap;justify-content:center}
+.tabs button{background:none;border:none;color:#DCE9E1;font-family:var(--gothic);
+  font-size:12.5px;font-weight:700;padding:8px 13px;border-radius:9px;cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--amber);color:var(--ink)}
+:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+
+.phone{width:100%;max-width:390px;background:var(--paper);border-radius:26px;overflow:hidden;
+  box-shadow:0 24px 60px rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.08)}
+.bar{background:#101C19;color:#E8EFE9;font-size:11.5px;padding:9px 16px;display:flex;justify-content:space-between}
+.bar .dot{width:7px;height:7px;border-radius:50%;background:var(--amber);display:inline-block;margin-right:7px}
+.bar .back{background:none;border:none;color:#E8EFE9;font-size:11.5px;cursor:pointer;font-family:var(--gothic)}
+
+/* 商品一覧 */
+.listhead{background:linear-gradient(165deg,var(--ink-2),var(--ink) 75%);color:#fff;padding:24px 20px 20px;position:relative;overflow:hidden}
+.listhead::after{content:"";position:absolute;left:-30%;top:-70%;width:160%;height:190%;
+  background:radial-gradient(ellipse at 50% 50%,rgba(224,161,75,.26),transparent 62%)}
+.listhead .e{position:relative;font-size:10.5px;letter-spacing:.22em;color:var(--amber)}
+.listhead h2{position:relative;font-family:var(--mincho);font-size:22px;font-weight:900;margin-top:6px}
+.plist{padding:16px}
+.pcard{width:100%;text-align:left;background:var(--paper-2);border:1px solid var(--line);
+  border-radius:14px;padding:15px;margin-bottom:11px;cursor:pointer;font-family:var(--gothic);display:block}
+.pcard .tag{font-size:10px;letter-spacing:.16em;color:var(--moss)}
+.pcard h3{font-family:var(--mincho);font-size:18px;font-weight:900;margin-top:4px;line-height:1.35;color:var(--text)}
+.pcard .s{font-size:12px;color:var(--dim);margin-top:5px}
+.pcard .p{font-family:var(--mincho);font-size:19px;margin-top:9px;display:flex;justify-content:space-between;align-items:baseline}
+.pcard .p small{font-family:var(--gothic);font-size:11.5px;color:var(--dim)}
+.pcard[disabled]{opacity:.5;cursor:not-allowed}
+
+.hero{position:relative;background:linear-gradient(165deg,var(--ink-2),var(--ink) 70%);color:#fff;padding:24px 20px 20px;overflow:hidden}
+.hero::after{content:"";position:absolute;left:-30%;top:-60%;width:160%;height:180%;
+  background:radial-gradient(ellipse at 50% 50%,rgba(224,161,75,.30),transparent 62%);pointer-events:none}
+.hero .eyebrow{position:relative;font-size:10.5px;letter-spacing:.22em;color:var(--amber)}
+.hero h2{position:relative;font-family:var(--mincho);font-weight:900;font-size:23px;line-height:1.35;margin-top:7px}
+.hero .price{position:relative;margin-top:11px;display:flex;align-items:baseline;gap:8px;font-family:var(--mincho)}
+.hero .price b{font-size:26px;color:var(--amber-soft)}
+.hero .price span{font-size:11px;color:#A9C0B6;font-family:var(--gothic)}
+.body{padding:18px 16px 24px}
+section{margin-bottom:24px}
+.step{display:flex;align-items:center;gap:9px;margin-bottom:11px}
+.step .n{font-family:var(--mincho);font-size:11px;color:var(--paper);background:var(--moss);
+  width:21px;height:21px;border-radius:50%;display:grid;place-items:center;flex:none}
+.step h3{font-size:14px;font-weight:700}
+.dates{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+.date{background:var(--paper-2);border:1px solid var(--line);border-radius:11px;padding:9px 4px;
+  text-align:center;cursor:pointer;font-family:var(--gothic);color:var(--text)}
+.date .d{font-family:var(--mincho);font-size:17px;font-weight:700;line-height:1.2}
+.date .w{font-size:10px;color:var(--dim)}
+.date[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+.date[aria-pressed="true"] .w{color:var(--amber)}
+.slots{display:flex;flex-direction:column;gap:8px}
+.slot{background:var(--paper-2);border:1px solid var(--line);border-radius:12px;padding:11px 13px;cursor:pointer;text-align:left;font-family:var(--gothic);color:var(--text)}
+.slot[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.slot .lead{font-size:11.5px;color:var(--dim)}
+.beam{display:flex;align-items:center;gap:8px;margin-top:14px}
+.beam .t{font-family:var(--mincho);font-size:15px;font-weight:700}
+.beam .rail{flex:1;height:5px;border-radius:3px;position:relative;background:linear-gradient(90deg,var(--moss),var(--amber),var(--moss));opacity:.35}
+.slot[aria-pressed="true"] .beam .rail{opacity:1;box-shadow:0 0 10px rgba(224,161,75,.55)}
+.beam .rail::after{content:attr(data-stay);position:absolute;top:-16px;left:50%;transform:translateX(-50%);font-size:9.5px;color:var(--dim);white-space:nowrap}
+.slot .auto{font-size:10.5px;color:var(--dim);margin-top:8px}
+.slot .plain{font-family:var(--mincho);font-size:17px;font-weight:700}
+
+.terms{background:var(--paper-2);border:1px solid var(--line);border-left:3px solid var(--amber);border-radius:11px;padding:13px}
+.terms p{font-size:12px;color:var(--dim);margin-bottom:10px}
+.doclist{display:flex;flex-direction:column;gap:7px}
+.doclink{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;background:var(--ink);
+  color:#fff;border:none;border-radius:9px;padding:11px 13px;font-family:var(--gothic);font-size:12.5px;font-weight:700;cursor:pointer;text-align:left}
+.doclink .tag{font-size:10px;color:var(--amber);font-weight:500;white-space:nowrap}
+.doclink.read{background:#2E4A40}
+.doclink.read .tag{color:#9FD8B2}
+.read-note{font-size:11px;color:var(--alert);margin-top:10px}
+.alwayslist{margin-top:12px;padding-top:11px;border-top:1px solid var(--line)}
+.alwayshead{font-size:10.5px;color:var(--dim);letter-spacing:.1em;margin-bottom:6px}
+.alwayslink{display:block;background:none;border:none;padding:4px 0;font-family:var(--gothic);
+  font-size:12px;color:var(--moss);text-decoration:underline;cursor:pointer;text-align:left}
+.read-note.done{color:var(--moss)}
+.agree{display:flex;gap:9px;align-items:flex-start;margin-top:11px;padding-top:11px;border-top:1px dashed var(--line);cursor:pointer}
+.agree input{width:19px;height:19px;flex:none;margin-top:1px;accent-color:var(--moss)}
+.agree span{font-size:12.5px}
+.agree.locked span{color:#9AA8A2}
+.qty{display:flex;align-items:center;gap:13px}
+.qty button{width:36px;height:36px;border-radius:9px;border:1px solid var(--line);background:var(--paper-2);font-size:18px;cursor:pointer;color:var(--text)}
+.qty .v{font-family:var(--mincho);font-size:19px;font-weight:700;min-width:32px;text-align:center}
+.total{display:flex;justify-content:space-between;align-items:baseline;padding:12px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-bottom:14px}
+.total span{font-size:12.5px;color:var(--dim)}
+.total b{font-family:var(--mincho);font-size:22px}
+.cta{width:100%;padding:15px;border:none;border-radius:12px;background:var(--ink);color:#fff;font-family:var(--gothic);font-size:15px;font-weight:700;cursor:pointer}
+.cta:disabled{background:#C3CCC6;cursor:not-allowed}
+.cta.ghost{background:none;border:1px solid var(--line);color:var(--text);font-weight:500;font-size:13px;padding:12px}
+.cta-note{font-size:11px;color:var(--dim);text-align:center;margin-top:8px}
+
+.stripe{background:#fff;min-height:470px;padding:22px 20px}
+.stripe .brand{font-size:12px;color:#6B7280;margin-bottom:20px}
+.stripe .amt{font-family:var(--mincho);font-size:30px}
+.stripe .desc{font-size:12.5px;color:#6B7280;margin-bottom:20px}
+.stripe .meta{font-size:10.5px;color:#9CA3AF;background:#F6F7F9;border-radius:7px;padding:9px;margin-bottom:16px;line-height:1.7}
+.fld{margin-bottom:12px}
+.fld label{display:block;font-size:11.5px;color:#374151;margin-bottom:5px}
+.fld input{width:100%;padding:11px 12px;border:1px solid #D1D5DB;border-radius:7px;font-family:var(--gothic);font-size:14px}
+.stripe .go{width:100%;padding:14px;border:none;border-radius:7px;background:#635BFF;color:#fff;font-family:var(--gothic);font-size:14.5px;font-weight:700;cursor:pointer;margin-top:6px}
+.stripe .foot{font-size:10.5px;color:#9CA3AF;text-align:center;margin-top:14px}
+
+.tk-head{background:var(--ink);color:#fff;padding:20px}
+.tk-head .ok{color:var(--amber);font-size:11px;letter-spacing:.18em}
+.tk-head h2{font-family:var(--mincho);font-size:20px;margin-top:6px}
+.tk-head .meta{font-size:12px;color:#B7CBC2;margin-top:8px;line-height:1.8}
+.tickets{padding:16px}
+.ticket{background:var(--paper-2);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px;position:relative;overflow:hidden}
+.ticket.used{background:#EDF0ED;border-style:dashed;color:#8A9A93}
+.ticket .kind{font-size:10.5px;letter-spacing:.14em;color:var(--moss)}
+.ticket.used .kind{color:#9AA8A2}
+.ticket h4{font-family:var(--mincho);font-size:17px;font-weight:700;margin-top:3px}
+.ticket .val{font-family:var(--mincho);font-size:13px;color:var(--dim);margin-top:2px}
+.ticket .exp{font-size:11px;color:#8A6A2E;background:#FBF3E5;border-radius:7px;padding:6px 8px;margin-top:9px}
+.ticket.used .exp{background:#E7EBE7;color:#8A9A93}
+.scan{margin-top:12px;width:100%;padding:11px;border:none;border-radius:9px;background:var(--moss);color:#fff;font-family:var(--gothic);font-size:13px;font-weight:700;cursor:pointer}
+.scan.sub{background:none;border:1px solid var(--line);color:var(--dim)}
+.showstaff{margin-top:10px;font-size:11.5px;color:var(--dim);background:#EFF3EE;border-radius:9px;padding:10px}
+.stamp{margin-top:11px;padding-top:11px;border-top:1px dashed #C6D0CA;font-size:11.5px}
+.stamp b{font-family:var(--mincho);color:var(--alert);font-size:13px}
+
+/* カメラ */
+.cam{position:fixed;inset:0;background:#0A130F;display:none;flex-direction:column;z-index:70}
+.cam.open{display:flex}
+.cam-top{padding:14px 18px;color:#E4EDE7;display:flex;justify-content:space-between;align-items:center;font-size:13px}
+.cam-top button{background:none;border:none;color:#E4EDE7;font-size:22px;cursor:pointer}
+.cam-hint{padding:6px 18px 6px;color:#B7CBC2;font-size:11.5px;text-align:center}
+.reticle{margin:0 auto 10px;width:150px;height:150px;border:2px solid rgba(224,161,75,.7);border-radius:14px;display:grid;place-items:center;color:#C3D6CC;font-size:11px}
+.finder{flex:1;overflow-y:auto;padding:0 16px 20px;display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:11px;align-content:start}
+.poster{background:#FBFBF8;border-radius:10px;padding:10px;cursor:pointer;border:none;text-align:center;font-family:var(--gothic)}
+.poster .p-qr{width:100%;aspect-ratio:1;border-radius:6px;margin-bottom:7px;display:grid;place-items:center;background:#fff;padding:4px}
+.poster .p-qr svg{width:100%;height:auto;display:block;shape-rendering:crispEdges}
+.poster .p-name{font-size:12px;font-weight:700;line-height:1.4;color:#1C2A26}
+.poster .p-code{font-size:10px;color:#8A9A93;font-family:var(--mincho);letter-spacing:.08em}
+.manual{padding:13px 18px 16px;border-top:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.3)}
+.manual .h{font-size:11.5px;color:#C3D6CC;margin-bottom:8px}
+.manual .row{display:flex;gap:8px}
+.manual input{flex:1;padding:11px;border-radius:10px;border:1px solid rgba(255,255,255,.28);
+  background:rgba(255,255,255,.12);color:#F2F7F4;font-family:var(--mincho);font-size:17px;letter-spacing:.16em;text-align:center;text-transform:uppercase}
+.manual input::placeholder{color:#8FA69C;letter-spacing:.1em;font-size:13px}
+.manual button{padding:11px 18px;border:none;border-radius:10px;background:var(--amber);color:var(--ink);font-family:var(--gothic);font-size:13px;font-weight:700;cursor:pointer}
+.manual .err{font-size:11.5px;color:#F0A79A;margin-top:7px;min-height:17px}
+
+/* 半券 */
+.stub{position:fixed;inset:0;background:#0A130F;display:none;align-items:center;justify-content:center;z-index:85;padding:20px;overflow-y:auto}
+.stub.open{display:flex}
+.stub-card{background:#FCFAF4;border-radius:18px;width:100%;max-width:330px;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.5)}
+.stub-top{background:var(--ink);color:#fff;padding:16px 20px}
+.stub-top .k{font-size:10.5px;letter-spacing:.2em;color:var(--amber)}
+.stub-top .v{font-family:var(--mincho);font-size:21px;font-weight:900;margin-top:4px;line-height:1.3}
+.stub-mid{padding:20px 20px 16px;text-align:center}
+.stub-mid .where{font-size:11px;color:var(--dim);letter-spacing:.14em}
+.stub-mid .shop{font-family:var(--mincho);font-size:25px;font-weight:900;line-height:1.35;margin-top:5px}
+.stub-mid .amt{font-family:var(--mincho);font-size:15px;color:var(--moss);margin-top:8px}
+.seal{margin:16px auto 0;width:120px;height:120px;border-radius:50%;border:3px solid var(--alert);
+  color:var(--alert);display:grid;place-content:center;transform:rotate(-11deg);font-family:var(--mincho);line-height:1.25;padding:6px}
+.seal .s1{font-size:20px;font-weight:900;letter-spacing:.08em}
+.seal .s2{font-size:12px;margin-top:5px}
+.stub-cut{border-top:2px dashed #DCD6C6;position:relative;margin-top:16px}
+.stub-cut::before,.stub-cut::after{content:"";position:absolute;top:-11px;width:22px;height:22px;border-radius:50%;background:#0A130F}
+.stub-cut::before{left:-11px}.stub-cut::after{right:-11px}
+.stub-foot{padding:13px 20px 16px;font-size:11.5px;color:var(--dim);text-align:center;line-height:1.8}
+.stub-note{background:#FBF3E5;color:#6B5222;font-size:12px;padding:10px;text-align:center;font-weight:700}
+.stub-close{display:block;margin:16px auto 0;padding:11px 26px;border:1px solid rgba(255,255,255,.3);border-radius:10px;background:none;color:#DCE6E0;font-family:var(--gothic);font-size:13px;cursor:pointer}
+
+/* 乗車QR */
+.busqr{position:fixed;inset:0;background:#fff;display:none;flex-direction:column;align-items:center;justify-content:center;z-index:80;padding:24px;text-align:center}
+.busqr.open{display:flex}
+.busqr .lead{font-family:var(--mincho);font-size:17px;font-weight:700;margin-bottom:4px}
+.busqr .bright{font-size:11.5px;color:var(--dim);margin-bottom:16px}
+.busqr .code{padding:10px;border:1px solid var(--line);border-radius:12px}
+.busqr .code svg{display:block;width:min(60vw,240px);height:auto;shape-rendering:crispEdges}
+.busqr .meta{font-size:12.5px;margin-top:14px;line-height:1.8}
+.busqr .close{margin-top:20px;padding:12px 26px;border:1px solid var(--line);border-radius:10px;background:none;font-family:var(--gothic);font-size:13px;cursor:pointer;color:var(--text)}
+
+/* 係員 */
+.staff{width:100%;max-width:390px;background:#1D362E;border:1px solid rgba(255,255,255,.18);
+  border-radius:22px;padding:20px;color:#F2F7F4;box-shadow:0 20px 44px rgba(0,0,0,.4)}
+.staff h2{font-family:var(--mincho);font-size:17px;color:var(--amber-soft)}
+.staff .sub{font-size:11.5px;color:#C3D6CC;margin-bottom:14px}
+.stopsel{display:flex;gap:7px;margin-bottom:14px}
+.stopsel button{flex:1;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.28);
+  color:#F2F7F4;border-radius:10px;padding:9px;font-family:var(--gothic);font-size:12.5px;cursor:pointer}
+.stopsel button[aria-pressed="true"]{background:var(--amber);color:var(--ink);border-color:var(--amber);font-weight:700}
+.slotlabel{font-size:11.5px;color:#C3D6CC;margin-bottom:6px}
+.slotsel{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:16px}
+.slotsel button{background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.28);color:#F2F7F4;
+  border-radius:9px;padding:9px 4px;font-family:var(--mincho);font-size:14px;font-weight:700;cursor:pointer}
+.slotsel button[aria-pressed="true"]{background:#fff;color:var(--ink);border-color:#fff}
+.scanbig{width:100%;padding:19px;border:none;border-radius:14px;background:var(--amber);color:var(--ink);font-family:var(--gothic);font-size:16px;font-weight:700;cursor:pointer}
+.result{margin-top:14px;border-radius:12px;padding:16px;text-align:center}
+.result.ok{background:#2E5A3F;border:1px solid #7FB88C}
+.result.ng{background:#6E2A22;border:1px solid #E08A7C}
+.result .big{font-family:var(--mincho);font-size:25px;font-weight:700}
+.result .small{font-size:12px;color:#EAF2ED;margin-top:5px;line-height:1.7}
+.pick{margin-top:14px;background:rgba(0,0,0,.22);border-radius:12px;padding:12px}
+.pick .h{font-size:11.5px;color:#C3D6CC;margin-bottom:8px}
+.pick button{width:100%;text-align:left;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.28);
+  color:#F2F7F4;border-radius:9px;padding:10px 12px;font-family:var(--gothic);font-size:12.5px;cursor:pointer;margin-bottom:6px}
+.staff .count{margin-top:16px;padding-top:13px;border-top:1px solid rgba(255,255,255,.2);font-size:12.5px;color:#DCE9E1;display:flex;justify-content:space-between}
+.staff .count b{font-family:var(--mincho);font-size:19px;color:#fff}
+
+/* 管理 */
+.admin{width:100%;max-width:880px;background:var(--paper);border-radius:18px;padding:22px}
+.admin h2{font-family:var(--mincho);font-size:18px}
+.admin .sub{font-size:12px;color:var(--dim);margin-bottom:16px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(115px,1fr));gap:10px;margin-bottom:16px}
+.kpi{background:var(--paper-2);border:1px solid var(--line);border-radius:12px;padding:13px}
+.kpi .l{font-size:11px;color:var(--dim)}
+.kpi .v{font-family:var(--mincho);font-size:24px;font-weight:700;line-height:1.3}
+.kpi .v small{font-size:12px;color:var(--dim);font-family:var(--gothic)}
+.admin h3{font-family:var(--mincho);font-size:14px;margin:18px 0 9px;padding-left:8px;border-left:2px solid var(--amber)}
+table{width:100%;border-collapse:collapse;font-size:12.5px;background:var(--paper-2)}
+th,td{border:1px solid var(--line);padding:7px 9px;text-align:left;vertical-align:top}
+th{background:#E7ECE7;font-size:11.5px}
+td.num{text-align:right;font-family:var(--mincho);white-space:nowrap}
+tr.zero td{color:#9AA8A2}
+tfoot td{background:#E7ECE7;font-weight:700}
+.empty{background:var(--paper-2);border:1px dashed var(--line);border-radius:10px;padding:20px;text-align:center;color:var(--dim);font-size:12.5px}
+.scroll{max-height:260px;overflow-y:auto;border-radius:8px}
+.ok-badge{color:var(--moss);font-weight:700}
+.ng-badge{color:var(--alert);font-weight:700}
+
+/* 商品設定 */
+.editor{width:100%;max-width:880px;background:var(--paper);border-radius:18px;padding:22px}
+.editor h2{font-family:var(--mincho);font-size:18px}
+.editor .sub{font-size:12px;color:var(--dim);margin-bottom:16px}
+.prodtabs{display:flex;gap:7px;margin-bottom:18px;flex-wrap:wrap}
+.prodtabs button{background:var(--paper-2);border:1px solid var(--line);border-radius:10px;padding:9px 14px;
+  font-family:var(--gothic);font-size:12.5px;cursor:pointer;color:var(--text)}
+.prodtabs button[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink);font-weight:700}
+.frow{display:flex;flex-direction:column;gap:5px;margin-bottom:13px}
+.frow label{font-size:11.5px;color:var(--dim)}
+.frow select,.docrow select{padding:10px 11px;border:1px solid var(--line);border-radius:9px;
+  font-family:var(--gothic);font-size:13px;background:var(--paper-2);color:var(--text)}
+.frow input,.frow textarea{padding:10px 11px;border:1px solid var(--line);border-radius:9px;
+  font-family:var(--gothic);font-size:13.5px;background:var(--paper-2);color:var(--text);width:100%}
+.frow textarea{min-height:64px;resize:vertical;line-height:1.7}
+.docrow{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+.docrow input{flex:1}
+.docrow button{border:1px solid var(--line);background:var(--paper-2);border-radius:9px;padding:9px 13px;
+  cursor:pointer;font-family:var(--gothic);font-size:12px;color:var(--alert);white-space:nowrap}
+.adddoc{border:1px dashed var(--line);background:none;border-radius:9px;padding:10px;width:100%;
+  cursor:pointer;font-family:var(--gothic);font-size:12.5px;color:var(--dim)}
+.savebar{display:flex;gap:9px;align-items:center;margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+.savebar button{padding:12px 22px;border:none;border-radius:10px;background:var(--ink);color:#fff;
+  font-family:var(--gothic);font-size:13.5px;font-weight:700;cursor:pointer}
+.savebar .msg{font-size:12px;color:var(--moss)}
+.hint{background:#FBF3E5;border:1px solid #EBD9B8;border-radius:10px;padding:11px 13px;font-size:12px;color:#6B5222;margin-bottom:16px}
+
+/* シート */
+.sheet{position:fixed;inset:0;background:rgba(10,22,19,.62);display:none;align-items:flex-end;justify-content:center;z-index:60}
+.sheet.open{display:flex}
+.sheet-in{background:var(--paper-2);width:100%;max-width:390px;max-height:88vh;border-radius:18px 18px 0 0;display:flex;flex-direction:column}
+.sheet-head{padding:15px 18px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:10px}
+.sheet-head h4{font-family:var(--mincho);font-size:14.5px;line-height:1.4}
+.sheet-head button{background:none;border:none;font-size:21px;cursor:pointer;color:var(--dim);flex:none}
+.sheet-body{padding:16px 18px 22px;overflow-y:auto;font-size:12.5px}
+.sheet-body h5{font-family:var(--mincho);font-size:13px;margin:15px 0 5px;padding-left:8px;border-left:2px solid var(--amber)}
+.sheet-body h5:first-child{margin-top:0}
+.sheet-body table{margin-top:6px;font-size:11.5px}
+.applied{background:#FBF3E5;border:1px solid var(--amber);border-radius:9px;padding:11px;font-size:12px;margin-bottom:13px}
+.sample{background:#FBECE9;border:1px solid #E8C4BD;color:var(--alert);border-radius:8px;padding:9px 11px;font-size:11px;margin-top:15px}
+
+.notes{width:100%;max-width:880px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);
+  border-radius:14px;padding:18px;color:#D6E3DC;font-size:12.5px}
+.notes h3{font-family:var(--mincho);color:var(--amber-soft);font-size:14px;margin-bottom:10px;font-weight:700}
+.notes ul{list-style:none;display:flex;flex-direction:column;gap:8px}
+.notes li{display:flex;gap:9px}
+.notes li::before{content:"→";color:var(--amber);flex:none}
+.notes .tail{margin-top:13px;padding-top:11px;border-top:1px solid rgba(255,255,255,.12);color:#A3B8AE;font-size:11.5px}
+.reset{background:none;border:1px solid rgba(255,255,255,.25);color:#D6E3DC;border-radius:8px;padding:7px 14px;font-family:var(--gothic);font-size:12px;cursor:pointer}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="hd">
+  <h1>菊池観光協会　予約・チケット プロトタイプ</h1>
+  <p>商品一覧から選び、条件書を確認して申し込み、QRで消費するまで</p>
+</div>
+
+<div class="tabs" role="tablist">
+  <button role="tab" aria-selected="true" data-view="customer">お客様</button>
+  <button role="tab" aria-selected="false" data-view="staff">係員</button>
+  <button role="tab" aria-selected="false" data-view="admin">運営管理</button>
+  <button role="tab" aria-selected="false" data-view="editor">商品設定</button>
+</div>
+
+<!-- お客様 -->
+<div id="viewCustomer">
+<div class="phone">
+  <div class="bar">
+    <span><span class="dot"></span>菊池観光協会</span>
+    <span id="barR">商品一覧</span>
+  </div>
+
+  <div id="scList">
+    <div class="listhead"><div class="e">KIKUCHI KANKO</div><h2>体験・チケット</h2></div>
+    <div class="plist" id="plist"></div>
+  </div>
+
+  <div id="scBook" hidden>
+    <div class="hero">
+      <div class="eyebrow" id="hEyebrow"></div>
+      <h2 id="hName"></h2>
+      <div class="price"><b id="hPrice"></b><span id="hSub"></span></div>
+    </div>
+    <div class="body">
+      <section><div class="step"><span class="n">1</span><h3>日付を選ぶ</h3></div><div class="dates" id="dates"></div></section>
+      <section id="secSlot" hidden><div class="step"><span class="n">2</span><h3 id="slotTitle"></h3></div><div class="slots" id="slots"></div></section>
+      <section id="secQty" hidden>
+        <div class="step"><span class="n">3</span><h3>人数</h3></div>
+        <div class="qty"><button id="minus" aria-label="減らす">−</button><span class="v" id="qtyV">1</span><button id="plus" aria-label="増やす">＋</button><span style="font-size:12px;color:var(--dim)">名</span></div>
+        <div style="font-size:11px;color:var(--dim);margin-top:8px">人数を変えると、書面の確認からやり直しになります。</div>
+      </section>
+      <section id="secTerms" hidden>
+        <div class="step"><span class="n">4</span><h3>書面を確認する</h3></div>
+        <div class="terms">
+          <p id="termsLead"></p>
+          <div class="doclist" id="doclist"></div>
+          <div class="read-note" id="readNote"></div>
+          <div class="alwayslist" id="alwayslist"></div>
+          <label class="agree locked" id="agreeWrap"><input type="checkbox" id="agree" disabled><span id="agreeText"></span></label>
+          <div id="consentLog" style="font-size:11px;color:var(--moss);margin-top:9px" hidden></div>
+        </div>
+      </section>
+      <div class="total"><span>合計</span><b id="total"></b></div>
+      <button class="cta" id="pay" disabled>お支払いに進む</button>
+      <div class="cta-note" id="ctaNote"></div>
+      <button class="cta ghost" id="toList" style="margin-top:10px">商品一覧に戻る</button>
+    </div>
+  </div>
+
+  <div id="scPay" hidden>
+    <div class="stripe">
+      <div class="brand">🔒 stripe のお支払い画面（試作）</div>
+      <div class="amt" id="payAmt"></div>
+      <div class="desc" id="payDesc"></div>
+      <div class="meta" id="payMeta"></div>
+      <div class="fld"><label>メールアドレス</label><input value="test@example.com"></div>
+      <div class="fld"><label>カード番号</label><input value="4242 4242 4242 4242"></div>
+      <div class="fld"><label>有効期限 ・ セキュリティコード</label><input value="12/28　　123"></div>
+      <button class="go" id="doPay">支払う</button>
+      <div class="foot">試作画面です。実際の請求は発生しません。</div>
+    </div>
+  </div>
+
+  <div id="scTicket" hidden>
+    <div class="tk-head"><div class="ok">お支払いが完了しました</div><h2>チケット</h2><div class="meta" id="tkMeta"></div></div>
+    <div class="tickets" id="tickets"></div>
+    <div style="padding:0 16px 22px"><button class="cta ghost" id="backTop">商品一覧に戻る</button></div>
+  </div>
+</div>
+</div>
+
+<!-- 係員 -->
+<div id="viewStaff" hidden>
+  <div class="staff">
+    <h2>バス乗車の確認</h2>
+    <div class="sub">スマホの標準カメラでお客様のQRを読むと、この画面が開きます</div>
+    <div class="stopsel" id="stopsel"></div>
+    <div class="slotlabel">担当する便</div>
+    <div class="slotsel" id="slotsel"></div>
+    <button class="scanbig" id="staffScan">カメラで読み取る</button>
+    <div id="staffResult"></div>
+    <div class="count"><span id="stopName">—</span><span>本日 <b id="rideCount">0</b> 名</span></div>
+  </div>
+</div>
+
+<!-- 管理 -->
+<div id="viewAdmin" hidden>
+  <div class="admin">
+    <h2>使用状況</h2>
+    <div class="sub">発行した券と、どこで使われたかの記録</div>
+    <div class="kpis" id="kpis"></div>
+    <h3>加盟店ごとの精算</h3>
+    <div id="shopTbl"></div>
+    <h3>バス乗車　乗り場ごと</h3>
+    <div id="busTbl"></div>
+    <h3>書面への同意記録</h3>
+    <div id="consentTbl"></div>
+    <h3>消費の履歴</h3>
+    <div class="scroll" id="log"></div>
+  </div>
+</div>
+
+<!-- 商品設定 -->
+<div id="viewEditor" hidden>
+  <div class="editor">
+    <h2>商品設定</h2>
+    <div class="sub">予約画面の文言と、確認してもらう書面を編集します</div>
+    <div class="hint">ここは権限のある職員だけが開ける画面という想定です。編集して保存すると、お客様の画面にすぐ反映されます。</div>
+    <div class="prodtabs" id="prodtabs"></div>
+    <div id="editorForm"></div>
+    <div class="savebar"><button id="saveProd">保存する</button><span class="msg" id="saveMsg"></span></div>
+  </div>
+</div>
+
+<div class="notes">
+  <h3>この試作で確かめられること</h3>
+  <ul>
+    <li>商品一覧から選ぶ形なので、ライトアップ以外のイベントも同じ仕組みで扱える</li>
+    <li>確認してもらう書面は何枚でも増やせる。すべて開かないと同意にチェックできない</li>
+    <li>書面の枚数・名称・同意文言・説明文は、商品設定タブから職員が変えられる</li>
+    <li>QRが読めないときは、掲示物の番号を手入力しても同じ結果になる</li>
+    <li>同意した時点の内容が記録され、申込内容と一致しているか管理画面で確認できる</li>
+  </ul>
+  <div class="tail">店名・施設名はすべて仮です。決済は動作しません。データはこの画面を閉じると消えます。<br>
+  QRは本物なので、スマホで読み取ると架空のURLが開きます。</div>
+  <div style="margin-top:12px;display:flex;gap:9px;flex-wrap:wrap">
+    <button class="reset" id="resetAll">データを消す</button>
+    <button class="reset" id="expToggle">試作用：期限切れの状態にする</button>
+  </div>
+</div>
+
+<!-- 書面 -->
+<div class="sheet" id="sheet" role="dialog" aria-modal="true">
+  <div class="sheet-in">
+    <div class="sheet-head"><h4 id="sheetTitle"></h4><button id="closeDoc" aria-label="閉じる">×</button></div>
+    <div class="sheet-body" id="sheetBody"></div>
+  </div>
+</div>
+
+<!-- 半券 -->
+<div class="stub" id="stub" role="dialog" aria-modal="true">
+  <div>
+    <div class="stub-card">
+      <div class="stub-top"><div class="k" id="stubKind"></div><div class="v" id="stubTitle"></div></div>
+      <div class="stub-mid">
+        <div class="where" id="stubWhere"></div>
+        <div class="shop" id="stubShop"></div>
+        <div class="amt" id="stubAmt"></div>
+        <div class="seal"><div class="s1" id="stubSeal">使用済</div><div class="s2" id="stubTime"></div></div>
+      </div>
+      <div class="stub-cut"></div>
+      <div class="stub-foot" id="stubFoot"></div>
+      <div class="stub-note" id="stubNote"></div>
+    </div>
+    <button class="stub-close" id="stubClose">閉じる</button>
+  </div>
+</div>
+
+<!-- 乗車QR -->
+<div class="busqr" id="busQr" role="dialog" aria-modal="true">
+  <div class="lead">往復バス乗車券</div>
+  <div class="bright">係員がカメラで読み取ります。画面を明るくしてください。</div>
+  <div class="code" id="busQrArea"></div>
+  <div class="meta" id="busQrMeta"></div>
+  <button class="close" id="busQrClose">閉じる</button>
+</div>
+
+<!-- カメラ -->
+<div class="cam" id="cam" role="dialog" aria-modal="true">
+  <div class="cam-top"><span id="camTitle"></span><button id="camClose" aria-label="閉じる">×</button></div>
+  <div class="cam-hint">
+    <div class="reticle">ここにQRをかざします</div>
+    実際はカメラで読み取ります。試作では下の掲示物をタップしてください。
+  </div>
+  <div class="finder" id="finder"></div>
+  <div class="manual">
+    <div class="h">QRが読み取れないときは、掲示物の番号を入力してください</div>
+    <div class="row"><input id="manualCode" placeholder="例 F03" autocomplete="off"><button id="manualGo">確定</button></div>
+    <div class="err" id="manualErr"></div>
+  </div>
+</div>
+
+<script>
+/* qrcode-generator (MIT) 同梱 */
+var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],f={},c=function(t,r){o=function(t){for(var r=new Array(t),e=0;e<t;e+=1){r[e]=new Array(t);for(var n=0;n<t;n+=1)r[e][n]=null}return r}(i=4*e+17),l(0,0),l(i-7,0),l(0,i-7),s(),h(),d(t,r),e>=7&&v(t),null==a&&(a=p(e,n,u)),w(a,r)},l=function(t,r){for(var e=-1;e<=7;e+=1)if(!(t+e<=-1||i<=t+e))for(var n=-1;n<=7;n+=1)r+n<=-1||i<=r+n||(o[t+e][r+n]=0<=e&&e<=6&&(0==n||6==n)||0<=n&&n<=6&&(0==e||6==e)||2<=e&&e<=4&&2<=n&&n<=4)},h=function(){for(var t=8;t<i-8;t+=1)null==o[t][6]&&(o[t][6]=t%2==0);for(var r=8;r<i-8;r+=1)null==o[6][r]&&(o[6][r]=r%2==0)},s=function(){for(var t=B.getPatternPosition(e),r=0;r<t.length;r+=1)for(var n=0;n<t.length;n+=1){var i=t[r],a=t[n];if(null==o[i][a])for(var u=-2;u<=2;u+=1)for(var f=-2;f<=2;f+=1)o[i+u][a+f]=-2==u||2==u||-2==f||2==f||0==u&&0==f}},v=function(t){for(var r=B.getBCHTypeNumber(e),n=0;n<18;n+=1){var a=!t&&1==(r>>n&1);o[Math.floor(n/3)][n%3+i-8-3]=a}for(n=0;n<18;n+=1){a=!t&&1==(r>>n&1);o[n%3+i-8-3][Math.floor(n/3)]=a}},d=function(t,r){for(var e=n<<3|r,a=B.getBCHTypeInfo(e),u=0;u<15;u+=1){var f=!t&&1==(a>>u&1);u<6?o[u][8]=f:u<8?o[u+1][8]=f:o[i-15+u][8]=f}for(u=0;u<15;u+=1){f=!t&&1==(a>>u&1);u<8?o[8][i-u-1]=f:u<9?o[8][15-u-1+1]=f:o[8][15-u-1]=f}o[i-8][8]=!t},w=function(t,r){for(var e=-1,n=i-1,a=7,u=0,f=B.getMaskFunction(r),c=i-1;c>0;c-=2)for(6==c&&(c-=1);;){for(var g=0;g<2;g+=1)if(null==o[n][c-g]){var l=!1;u<t.length&&(l=1==(t[u]>>>a&1)),f(n,c-g)&&(l=!l),o[n][c-g]=l,-1==(a-=1)&&(u+=1,a=7)}if((n+=e)<0||i<=n){n-=e,e=-e;break}}},p=function(t,r,e){for(var n=A.getRSBlocks(t,r),o=b(),i=0;i<e.length;i+=1){var a=e[i];o.put(a.getMode(),4),o.put(a.getLength(),B.getLengthInBits(a.getMode(),t)),a.write(o)}var u=0;for(i=0;i<n.length;i+=1)u+=n[i].dataCount;if(o.getLengthInBits()>8*u)throw"code length overflow. ("+o.getLengthInBits()+">"+8*u+")";for(o.getLengthInBits()+4<=8*u&&o.put(0,4);o.getLengthInBits()%8!=0;)o.putBit(!1);for(;!(o.getLengthInBits()>=8*u||(o.put(236,8),o.getLengthInBits()>=8*u));)o.put(17,8);return function(t,r){for(var e=0,n=0,o=0,i=new Array(r.length),a=new Array(r.length),u=0;u<r.length;u+=1){var f=r[u].dataCount,c=r[u].totalCount-f;n=Math.max(n,f),o=Math.max(o,c),i[u]=new Array(f);for(var g=0;g<i[u].length;g+=1)i[u][g]=255&t.getBuffer()[g+e];e+=f;var l=B.getErrorCorrectPolynomial(c),h=k(i[u],l.getLength()-1).mod(l);for(a[u]=new Array(l.getLength()-1),g=0;g<a[u].length;g+=1){var s=g+h.getLength()-a[u].length;a[u][g]=s>=0?h.getAt(s):0}}var v=0;for(g=0;g<r.length;g+=1)v+=r[g].totalCount;var d=new Array(v),w=0;for(g=0;g<n;g+=1)for(u=0;u<r.length;u+=1)g<i[u].length&&(d[w]=i[u][g],w+=1);for(g=0;g<o;g+=1)for(u=0;u<r.length;u+=1)g<a[u].length&&(d[w]=a[u][g],w+=1);return d}(o,n)};f.addData=function(t,r){var e=null;switch(r=r||"Byte"){case"Numeric":e=M(t);break;case"Alphanumeric":e=x(t);break;case"Byte":e=m(t);break;case"Kanji":e=L(t);break;default:throw"mode:"+r}u.push(e),a=null},f.isDark=function(t,r){if(t<0||i<=t||r<0||i<=r)throw t+","+r;return o[t][r]},f.getModuleCount=function(){return i},f.make=function(){if(e<1){for(var t=1;t<40;t++){for(var r=A.getRSBlocks(t,n),o=b(),i=0;i<u.length;i++){var a=u[i];o.put(a.getMode(),4),o.put(a.getLength(),B.getLengthInBits(a.getMode(),t)),a.write(o)}var g=0;for(i=0;i<r.length;i++)g+=r[i].dataCount;if(o.getLengthInBits()<=8*g)break}e=t}c(!1,function(){for(var t=0,r=0,e=0;e<8;e+=1){c(!0,e);var n=B.getLostPoint(f);(0==e||t>n)&&(t=n,r=e)}return r}())},f.createTableTag=function(t,r){t=t||2;var e="";e+='<table style="',e+=" border-width: 0px; border-style: none;",e+=" border-collapse: collapse;",e+=" padding: 0px; margin: "+(r=void 0===r?4*t:r)+"px;",e+='">',e+="<tbody>";for(var n=0;n<f.getModuleCount();n+=1){e+="<tr>";for(var o=0;o<f.getModuleCount();o+=1)e+='<td style="',e+=" border-width: 0px; border-style: none;",e+=" border-collapse: collapse;",e+=" padding: 0px; margin: 0px;",e+=" width: "+t+"px;",e+=" height: "+t+"px;",e+=" background-color: ",e+=f.isDark(n,o)?"#000000":"#ffffff",e+=";",e+='"/>';e+="</tr>"}return e+="</tbody>",e+="</table>"},f.createSvgTag=function(t,r,e,n){var o={};"object"==typeof arguments[0]&&(t=(o=arguments[0]).cellSize,r=o.margin,e=o.alt,n=o.title),t=t||2,r=void 0===r?4*t:r,(e="string"==typeof e?{text:e}:e||{}).text=e.text||null,e.id=e.text?e.id||"qrcode-description":null,(n="string"==typeof n?{text:n}:n||{}).text=n.text||null,n.id=n.text?n.id||"qrcode-title":null;var i,a,u,c,g=f.getModuleCount()*t+2*r,l="";for(c="l"+t+",0 0,"+t+" -"+t+",0 0,-"+t+"z ",l+='<svg version="1.1" xmlns="http://www.w3.org/2000/svg"',l+=o.scalable?"":' width="'+g+'px" height="'+g+'px"',l+=' viewBox="0 0 '+g+" "+g+'" ',l+=' preserveAspectRatio="xMinYMin meet"',l+=n.text||e.text?' role="img" aria-labelledby="'+y([n.id,e.id].join(" ").trim())+'"':"",l+=">",l+=n.text?'<title id="'+y(n.id)+'">'+y(n.text)+"</title>":"",l+=e.text?'<description id="'+y(e.id)+'">'+y(e.text)+"</description>":"",l+='<rect width="100%" height="100%" fill="white" cx="0" cy="0"/>',l+='<path d="',a=0;a<f.getModuleCount();a+=1)for(u=a*t+r,i=0;i<f.getModuleCount();i+=1)f.isDark(a,i)&&(l+="M"+(i*t+r)+","+u+c);return l+='" stroke="transparent" fill="black"/>',l+="</svg>"},f.createDataURL=function(t,r){t=t||2,r=void 0===r?4*t:r;var e=f.getModuleCount()*t+2*r,n=r,o=e-r;return I(e,e,function(r,e){if(n<=r&&r<o&&n<=e&&e<o){var i=Math.floor((r-n)/t),a=Math.floor((e-n)/t);return f.isDark(a,i)?0:1}return 1})},f.createImgTag=function(t,r,e){t=t||2,r=void 0===r?4*t:r;var n=f.getModuleCount()*t+2*r,o="";return o+="<img",o+=' src="',o+=f.createDataURL(t,r),o+='"',o+=' width="',o+=n,o+='"',o+=' height="',o+=n,o+='"',e&&(o+=' alt="',o+=y(e),o+='"'),o+="/>"};var y=function(t){for(var r="",e=0;e<t.length;e+=1){var n=t.charAt(e);switch(n){case"<":r+="&lt;";break;case">":r+="&gt;";break;case"&":r+="&amp;";break;case'"':r+="&quot;";break;default:r+=n}}return r};return f.createASCII=function(t,r){if((t=t||1)<2)return function(t){t=void 0===t?2:t;var r,e,n,o,i,a=1*f.getModuleCount()+2*t,u=t,c=a-t,g={"██":"█","█ ":"▀"," █":"▄","  ":" "},l={"██":"▀","█ ":"▀"," █":" ","  ":" "},h="";for(r=0;r<a;r+=2){for(n=Math.floor((r-u)/1),o=Math.floor((r+1-u)/1),e=0;e<a;e+=1)i="█",u<=e&&e<c&&u<=r&&r<c&&f.isDark(n,Math.floor((e-u)/1))&&(i=" "),u<=e&&e<c&&u<=r+1&&r+1<c&&f.isDark(o,Math.floor((e-u)/1))?i+=" ":i+="█",h+=t<1&&r+1>=c?l[i]:g[i];h+="\n"}return a%2&&t>0?h.substring(0,h.length-a-1)+Array(a+1).join("▀"):h.substring(0,h.length-1)}(r);t-=1,r=void 0===r?2*t:r;var e,n,o,i,a=f.getModuleCount()*t+2*r,u=r,c=a-r,g=Array(t+1).join("██"),l=Array(t+1).join("  "),h="",s="";for(e=0;e<a;e+=1){for(o=Math.floor((e-u)/t),s="",n=0;n<a;n+=1)i=1,u<=n&&n<c&&u<=e&&e<c&&f.isDark(o,Math.floor((n-u)/t))&&(i=0),s+=i?g:l;for(o=0;o<t;o+=1)h+=s+"\n"}return h.substring(0,h.length-1)},f.renderTo2dContext=function(t,r){r=r||2;for(var e=f.getModuleCount(),n=0;n<e;n++)for(var o=0;o<e;o++)t.fillStyle=f.isDark(n,o)?"black":"white",t.fillRect(o*r,n*r,r,r)},f};t.stringToBytes=(t.stringToBytesFuncs={default:function(t){for(var r=[],e=0;e<t.length;e+=1){var n=t.charCodeAt(e);r.push(255&n)}return r}}).default,t.createStringToBytes=function(t,r){var e=function(){for(var e=S(t),n=function(){var t=e.read();if(-1==t)throw"eof";return t},o=0,i={};;){var a=e.read();if(-1==a)break;var u=n(),f=n()<<8|n();i[String.fromCharCode(a<<8|u)]=f,o+=1}if(o!=r)throw o+" != "+r;return i}(),n="?".charCodeAt(0);return function(t){for(var r=[],o=0;o<t.length;o+=1){var i=t.charCodeAt(o);if(i<128)r.push(i);else{var a=e[t.charAt(o)];"number"==typeof a?(255&a)==a?r.push(a):(r.push(a>>>8),r.push(255&a)):r.push(n)}}return r}};var r,e,n,o,i,a=1,u=2,f=4,c=8,g={L:1,M:0,Q:3,H:2},l=0,h=1,s=2,v=3,d=4,w=5,p=6,y=7,B=(r=[[],[6,18],[6,22],[6,26],[6,30],[6,34],[6,22,38],[6,24,42],[6,26,46],[6,28,50],[6,30,54],[6,32,58],[6,34,62],[6,26,46,66],[6,26,48,70],[6,26,50,74],[6,30,54,78],[6,30,56,82],[6,30,58,86],[6,34,62,90],[6,28,50,72,94],[6,26,50,74,98],[6,30,54,78,102],[6,28,54,80,106],[6,32,58,84,110],[6,30,58,86,114],[6,34,62,90,118],[6,26,50,74,98,122],[6,30,54,78,102,126],[6,26,52,78,104,130],[6,30,56,82,108,134],[6,34,60,86,112,138],[6,30,58,86,114,142],[6,34,62,90,118,146],[6,30,54,78,102,126,150],[6,24,50,76,102,128,154],[6,28,54,80,106,132,158],[6,32,58,84,110,136,162],[6,26,54,82,110,138,166],[6,30,58,86,114,142,170]],e=1335,n=7973,i=function(t){for(var r=0;0!=t;)r+=1,t>>>=1;return r},(o={}).getBCHTypeInfo=function(t){for(var r=t<<10;i(r)-i(e)>=0;)r^=e<<i(r)-i(e);return 21522^(t<<10|r)},o.getBCHTypeNumber=function(t){for(var r=t<<12;i(r)-i(n)>=0;)r^=n<<i(r)-i(n);return t<<12|r},o.getPatternPosition=function(t){return r[t-1]},o.getMaskFunction=function(t){switch(t){case l:return function(t,r){return(t+r)%2==0};case h:return function(t,r){return t%2==0};case s:return function(t,r){return r%3==0};case v:return function(t,r){return(t+r)%3==0};case d:return function(t,r){return(Math.floor(t/2)+Math.floor(r/3))%2==0};case w:return function(t,r){return t*r%2+t*r%3==0};case p:return function(t,r){return(t*r%2+t*r%3)%2==0};case y:return function(t,r){return(t*r%3+(t+r)%2)%2==0};default:throw"bad maskPattern:"+t}},o.getErrorCorrectPolynomial=function(t){for(var r=k([1],0),e=0;e<t;e+=1)r=r.multiply(k([1,C.gexp(e)],0));return r},o.getLengthInBits=function(t,r){if(1<=r&&r<10)switch(t){case a:return 10;case u:return 9;case f:case c:return 8;default:throw"mode:"+t}else if(r<27)switch(t){case a:return 12;case u:return 11;case f:return 16;case c:return 10;default:throw"mode:"+t}else{if(!(r<41))throw"type:"+r;switch(t){case a:return 14;case u:return 13;case f:return 16;case c:return 12;default:throw"mode:"+t}}},o.getLostPoint=function(t){for(var r=t.getModuleCount(),e=0,n=0;n<r;n+=1)for(var o=0;o<r;o+=1){for(var i=0,a=t.isDark(n,o),u=-1;u<=1;u+=1)if(!(n+u<0||r<=n+u))for(var f=-1;f<=1;f+=1)o+f<0||r<=o+f||0==u&&0==f||a==t.isDark(n+u,o+f)&&(i+=1);i>5&&(e+=3+i-5)}for(n=0;n<r-1;n+=1)for(o=0;o<r-1;o+=1){var c=0;t.isDark(n,o)&&(c+=1),t.isDark(n+1,o)&&(c+=1),t.isDark(n,o+1)&&(c+=1),t.isDark(n+1,o+1)&&(c+=1),0!=c&&4!=c||(e+=3)}for(n=0;n<r;n+=1)for(o=0;o<r-6;o+=1)t.isDark(n,o)&&!t.isDark(n,o+1)&&t.isDark(n,o+2)&&t.isDark(n,o+3)&&t.isDark(n,o+4)&&!t.isDark(n,o+5)&&t.isDark(n,o+6)&&(e+=40);for(o=0;o<r;o+=1)for(n=0;n<r-6;n+=1)t.isDark(n,o)&&!t.isDark(n+1,o)&&t.isDark(n+2,o)&&t.isDark(n+3,o)&&t.isDark(n+4,o)&&!t.isDark(n+5,o)&&t.isDark(n+6,o)&&(e+=40);var g=0;for(o=0;o<r;o+=1)for(n=0;n<r;n+=1)t.isDark(n,o)&&(g+=1);return e+=Math.abs(100*g/r/r-50)/5*10},o),C=function(){for(var t=new Array(256),r=new Array(256),e=0;e<8;e+=1)t[e]=1<<e;for(e=8;e<256;e+=1)t[e]=t[e-4]^t[e-5]^t[e-6]^t[e-8];for(e=0;e<255;e+=1)r[t[e]]=e;var n={glog:function(t){if(t<1)throw"glog("+t+")";return r[t]},gexp:function(r){for(;r<0;)r+=255;for(;r>=256;)r-=255;return t[r]}};return n}();function k(t,r){if(void 0===t.length)throw t.length+"/"+r;var e=function(){for(var e=0;e<t.length&&0==t[e];)e+=1;for(var n=new Array(t.length-e+r),o=0;o<t.length-e;o+=1)n[o]=t[o+e];return n}(),n={getAt:function(t){return e[t]},getLength:function(){return e.length},multiply:function(t){for(var r=new Array(n.getLength()+t.getLength()-1),e=0;e<n.getLength();e+=1)for(var o=0;o<t.getLength();o+=1)r[e+o]^=C.gexp(C.glog(n.getAt(e))+C.glog(t.getAt(o)));return k(r,0)},mod:function(t){if(n.getLength()-t.getLength()<0)return n;for(var r=C.glog(n.getAt(0))-C.glog(t.getAt(0)),e=new Array(n.getLength()),o=0;o<n.getLength();o+=1)e[o]=n.getAt(o);for(o=0;o<t.getLength();o+=1)e[o]^=C.gexp(C.glog(t.getAt(o))+r);return k(e,0).mod(t)}};return n}var A=function(){var t=[[1,26,19],[1,26,16],[1,26,13],[1,26,9],[1,44,34],[1,44,28],[1,44,22],[1,44,16],[1,70,55],[1,70,44],[2,35,17],[2,35,13],[1,100,80],[2,50,32],[2,50,24],[4,25,9],[1,134,108],[2,67,43],[2,33,15,2,34,16],[2,33,11,2,34,12],[2,86,68],[4,43,27],[4,43,19],[4,43,15],[2,98,78],[4,49,31],[2,32,14,4,33,15],[4,39,13,1,40,14],[2,121,97],[2,60,38,2,61,39],[4,40,18,2,41,19],[4,40,14,2,41,15],[2,146,116],[3,58,36,2,59,37],[4,36,16,4,37,17],[4,36,12,4,37,13],[2,86,68,2,87,69],[4,69,43,1,70,44],[6,43,19,2,44,20],[6,43,15,2,44,16],[4,101,81],[1,80,50,4,81,51],[4,50,22,4,51,23],[3,36,12,8,37,13],[2,116,92,2,117,93],[6,58,36,2,59,37],[4,46,20,6,47,21],[7,42,14,4,43,15],[4,133,107],[8,59,37,1,60,38],[8,44,20,4,45,21],[12,33,11,4,34,12],[3,145,115,1,146,116],[4,64,40,5,65,41],[11,36,16,5,37,17],[11,36,12,5,37,13],[5,109,87,1,110,88],[5,65,41,5,66,42],[5,54,24,7,55,25],[11,36,12,7,37,13],[5,122,98,1,123,99],[7,73,45,3,74,46],[15,43,19,2,44,20],[3,45,15,13,46,16],[1,135,107,5,136,108],[10,74,46,1,75,47],[1,50,22,15,51,23],[2,42,14,17,43,15],[5,150,120,1,151,121],[9,69,43,4,70,44],[17,50,22,1,51,23],[2,42,14,19,43,15],[3,141,113,4,142,114],[3,70,44,11,71,45],[17,47,21,4,48,22],[9,39,13,16,40,14],[3,135,107,5,136,108],[3,67,41,13,68,42],[15,54,24,5,55,25],[15,43,15,10,44,16],[4,144,116,4,145,117],[17,68,42],[17,50,22,6,51,23],[19,46,16,6,47,17],[2,139,111,7,140,112],[17,74,46],[7,54,24,16,55,25],[34,37,13],[4,151,121,5,152,122],[4,75,47,14,76,48],[11,54,24,14,55,25],[16,45,15,14,46,16],[6,147,117,4,148,118],[6,73,45,14,74,46],[11,54,24,16,55,25],[30,46,16,2,47,17],[8,132,106,4,133,107],[8,75,47,13,76,48],[7,54,24,22,55,25],[22,45,15,13,46,16],[10,142,114,2,143,115],[19,74,46,4,75,47],[28,50,22,6,51,23],[33,46,16,4,47,17],[8,152,122,4,153,123],[22,73,45,3,74,46],[8,53,23,26,54,24],[12,45,15,28,46,16],[3,147,117,10,148,118],[3,73,45,23,74,46],[4,54,24,31,55,25],[11,45,15,31,46,16],[7,146,116,7,147,117],[21,73,45,7,74,46],[1,53,23,37,54,24],[19,45,15,26,46,16],[5,145,115,10,146,116],[19,75,47,10,76,48],[15,54,24,25,55,25],[23,45,15,25,46,16],[13,145,115,3,146,116],[2,74,46,29,75,47],[42,54,24,1,55,25],[23,45,15,28,46,16],[17,145,115],[10,74,46,23,75,47],[10,54,24,35,55,25],[19,45,15,35,46,16],[17,145,115,1,146,116],[14,74,46,21,75,47],[29,54,24,19,55,25],[11,45,15,46,46,16],[13,145,115,6,146,116],[14,74,46,23,75,47],[44,54,24,7,55,25],[59,46,16,1,47,17],[12,151,121,7,152,122],[12,75,47,26,76,48],[39,54,24,14,55,25],[22,45,15,41,46,16],[6,151,121,14,152,122],[6,75,47,34,76,48],[46,54,24,10,55,25],[2,45,15,64,46,16],[17,152,122,4,153,123],[29,74,46,14,75,47],[49,54,24,10,55,25],[24,45,15,46,46,16],[4,152,122,18,153,123],[13,74,46,32,75,47],[48,54,24,14,55,25],[42,45,15,32,46,16],[20,147,117,4,148,118],[40,75,47,7,76,48],[43,54,24,22,55,25],[10,45,15,67,46,16],[19,148,118,6,149,119],[18,75,47,31,76,48],[34,54,24,34,55,25],[20,45,15,61,46,16]],r=function(t,r){var e={};return e.totalCount=t,e.dataCount=r,e},e={};return e.getRSBlocks=function(e,n){var o=function(r,e){switch(e){case g.L:return t[4*(r-1)+0];case g.M:return t[4*(r-1)+1];case g.Q:return t[4*(r-1)+2];case g.H:return t[4*(r-1)+3];default:return}}(e,n);if(void 0===o)throw"bad rs block @ typeNumber:"+e+"/errorCorrectionLevel:"+n;for(var i=o.length/3,a=[],u=0;u<i;u+=1)for(var f=o[3*u+0],c=o[3*u+1],l=o[3*u+2],h=0;h<f;h+=1)a.push(r(c,l));return a},e}(),b=function(){var t=[],r=0,e={getBuffer:function(){return t},getAt:function(r){var e=Math.floor(r/8);return 1==(t[e]>>>7-r%8&1)},put:function(t,r){for(var n=0;n<r;n+=1)e.putBit(1==(t>>>r-n-1&1))},getLengthInBits:function(){return r},putBit:function(e){var n=Math.floor(r/8);t.length<=n&&t.push(0),e&&(t[n]|=128>>>r%8),r+=1}};return e},M=function(t){var r=a,e=t,n={getMode:function(){return r},getLength:function(t){return e.length},write:function(t){for(var r=e,n=0;n+2<r.length;)t.put(o(r.substring(n,n+3)),10),n+=3;n<r.length&&(r.length-n==1?t.put(o(r.substring(n,n+1)),4):r.length-n==2&&t.put(o(r.substring(n,n+2)),7))}},o=function(t){for(var r=0,e=0;e<t.length;e+=1)r=10*r+i(t.charAt(e));return r},i=function(t){if("0"<=t&&t<="9")return t.charCodeAt(0)-"0".charCodeAt(0);throw"illegal char :"+t};return n},x=function(t){var r=u,e=t,n={getMode:function(){return r},getLength:function(t){return e.length},write:function(t){for(var r=e,n=0;n+1<r.length;)t.put(45*o(r.charAt(n))+o(r.charAt(n+1)),11),n+=2;n<r.length&&t.put(o(r.charAt(n)),6)}},o=function(t){if("0"<=t&&t<="9")return t.charCodeAt(0)-"0".charCodeAt(0);if("A"<=t&&t<="Z")return t.charCodeAt(0)-"A".charCodeAt(0)+10;switch(t){case" ":return 36;case"$":return 37;case"%":return 38;case"*":return 39;case"+":return 40;case"-":return 41;case".":return 42;case"/":return 43;case":":return 44;default:throw"illegal char :"+t}};return n},m=function(r){var e=f,n=t.stringToBytes(r),o={getMode:function(){return e},getLength:function(t){return n.length},write:function(t){for(var r=0;r<n.length;r+=1)t.put(n[r],8)}};return o},L=function(r){var e=c,n=t.stringToBytesFuncs.SJIS;if(!n)throw"sjis not supported.";!function(){var t=n("友");if(2!=t.length||38726!=(t[0]<<8|t[1]))throw"sjis not supported."}();var o=n(r),i={getMode:function(){return e},getLength:function(t){return~~(o.length/2)},write:function(t){for(var r=o,e=0;e+1<r.length;){var n=(255&r[e])<<8|255&r[e+1];if(33088<=n&&n<=40956)n-=33088;else{if(!(57408<=n&&n<=60351))throw"illegal char at "+(e+1)+"/"+n;n-=49472}n=192*(n>>>8&255)+(255&n),t.put(n,13),e+=2}if(e<r.length)throw"illegal char at "+(e+1)}};return i},D=function(){var t=[],r={writeByte:function(r){t.push(255&r)},writeShort:function(t){r.writeByte(t),r.writeByte(t>>>8)},writeBytes:function(t,e,n){e=e||0,n=n||t.length;for(var o=0;o<n;o+=1)r.writeByte(t[o+e])},writeString:function(t){for(var e=0;e<t.length;e+=1)r.writeByte(t.charCodeAt(e))},toByteArray:function(){return t},toString:function(){var r="";r+="[";for(var e=0;e<t.length;e+=1)e>0&&(r+=","),r+=t[e];return r+="]"}};return r},S=function(t){var r=t,e=0,n=0,o=0,i={read:function(){for(;o<8;){if(e>=r.length){if(0==o)return-1;throw"unexpected end of file./"+o}var t=r.charAt(e);if(e+=1,"="==t)return o=0,-1;t.match(/^\s$/)||(n=n<<6|a(t.charCodeAt(0)),o+=6)}var i=n>>>o-8&255;return o-=8,i}},a=function(t){if(65<=t&&t<=90)return t-65;if(97<=t&&t<=122)return t-97+26;if(48<=t&&t<=57)return t-48+52;if(43==t)return 62;if(47==t)return 63;throw"c:"+t};return i},I=function(t,r,e){for(var n=function(t,r){var e=t,n=r,o=new Array(t*r),i={setPixel:function(t,r,n){o[r*e+t]=n},write:function(t){t.writeString("GIF87a"),t.writeShort(e),t.writeShort(n),t.writeByte(128),t.writeByte(0),t.writeByte(0),t.writeByte(0),t.writeByte(0),t.writeByte(0),t.writeByte(255),t.writeByte(255),t.writeByte(255),t.writeString(","),t.writeShort(0),t.writeShort(0),t.writeShort(e),t.writeShort(n),t.writeByte(0);var r=a(2);t.writeByte(2);for(var o=0;r.length-o>255;)t.writeByte(255),t.writeBytes(r,o,255),o+=255;t.writeByte(r.length-o),t.writeBytes(r,o,r.length-o),t.writeByte(0),t.writeString(";")}},a=function(t){for(var r=1<<t,e=1+(1<<t),n=t+1,i=u(),a=0;a<r;a+=1)i.add(String.fromCharCode(a));i.add(String.fromCharCode(r)),i.add(String.fromCharCode(e));var f,c,g,l=D(),h=(f=l,c=0,g=0,{write:function(t,r){if(t>>>r!=0)throw"length over";for(;c+r>=8;)f.writeByte(255&(t<<c|g)),r-=8-c,t>>>=8-c,g=0,c=0;g|=t<<c,c+=r},flush:function(){c>0&&f.writeByte(g)}});h.write(r,n);var s=0,v=String.fromCharCode(o[s]);for(s+=1;s<o.length;){var d=String.fromCharCode(o[s]);s+=1,i.contains(v+d)?v+=d:(h.write(i.indexOf(v),n),i.size()<4095&&(i.size()==1<<n&&(n+=1),i.add(v+d)),v=d)}return h.write(i.indexOf(v),n),h.write(e,n),h.flush(),l.toByteArray()},u=function(){var t={},r=0,e={add:function(n){if(e.contains(n))throw"dup key:"+n;t[n]=r,r+=1},size:function(){return r},indexOf:function(r){return t[r]},contains:function(r){return void 0!==t[r]}};return e};return i}(t,r),o=0;o<r;o+=1)for(var i=0;i<t;i+=1)n.setPixel(i,o,e(i,o));var a=D();n.write(a);for(var u=function(){var t=0,r=0,e=0,n="",o={},i=function(t){n+=String.fromCharCode(a(63&t))},a=function(t){if(t<0);else{if(t<26)return 65+t;if(t<52)return t-26+97;if(t<62)return t-52+48;if(62==t)return 43;if(63==t)return 47}throw"n:"+t};return o.writeByte=function(n){for(t=t<<8|255&n,r+=8,e+=1;r>=6;)i(t>>>r-6),r-=6},o.flush=function(){if(r>0&&(i(t<<6-r),t=0,r=0),e%3!=0)for(var o=3-e%3,a=0;a<o;a+=1)n+="="},o.toString=function(){return n},o}(),f=a.toByteArray(),c=0;c<f.length;c+=1)u.writeByte(f[c]);return u.flush(),"data:image/gif;base64,"+u};return t}();qrcode.stringToBytesFuncs["UTF-8"]=function(t){return function(t){for(var r=[],e=0;e<t.length;e++){var n=t.charCodeAt(e);n<128?r.push(n):n<2048?r.push(192|n>>6,128|63&n):n<55296||n>=57344?r.push(224|n>>12,128|n>>6&63,128|63&n):(e++,n=65536+((1023&n)<<10|1023&t.charCodeAt(e)),r.push(240|n>>18,128|n>>12&63,128|n>>6&63,128|63&n))}return r}(t)},function(t){"function"==typeof define&&define.amd?define([],t):"object"==typeof exports&&(module.exports=t())}(function(){return qrcode});
+
+</script>
+<script>
+/* ===== 加盟店 ===== */
+const FOOD=[["F01","渓谷茶屋"],["F02","きくち食堂"],["F03","門前そば処"],["F04","うどん屋 菊水"],
+  ["F05","カフェ みずのわ"],["F06","焼肉 泗水苑"],["F07","定食 七城屋"],["F08","洋食 リヴィエール"],
+  ["F09","居酒屋 龍門"],["F10","菓子処 わいふ"]];
+const ONSEN=[["O01","菊池温泉 旅館A"],["O02","菊池温泉 旅館B"],["O03","菊池温泉 共同浴場"],["O04","四季の里 旭志"]];
+const VENUE=[["V01","菊池渓谷ビジターセンター"]];
+const STAYHOTEL=[["S01","白金の森"]];
+const STOPS=["菊池市民広場","菊池渓谷"];
+
+/* ===== 券種 ===== */
+const KINDS={
+  bus  :{label:"往復バス乗車券",val:"市民広場 ⇄ 菊池渓谷",mode:"staff"},
+  food :{label:"お食事券",val:"500円分",mode:"shop",shops:FOOD,amount:500,note:"この画面をお店の方にお見せください"},
+  onsen:{label:"温泉券",val:"入浴1回",mode:"shop",shops:ONSEN,note:"この画面を受付でお見せください"},
+  exp  :{label:"体験参加券",val:"組子づくり 1名",mode:"shop",shops:VENUE,note:"この画面を受付でお見せください"},
+  stay :{label:"宿泊券",val:"1泊2食付き",mode:"shop",shops:STAYHOTEL,note:"この画面をフロントでお見せください"}
+};
+
+/* ===== 書面のひな形 ===== */
+const DOCBODY={
+  terms:`<div class="applied" id="docApplied"></div>
+    <h5>旅行企画・実施</h5>一般社団法人菊池観光協会（地域限定旅行業）<br>熊本県菊池市／TEL 0968-25-0513
+    <h5>旅行の内容</h5><span id="docContent"></span>
+    <h5>旅行代金</h5><span id="docPrice"></span>
+    <h5>最少催行人員</h5>10名
+    <h5>取消料</h5>
+    <table>
+      <tr><td>旅行開始日の8日目以前</td><td>無料</td></tr>
+      <tr><td>7日前〜2日前</td><td>30%</td></tr>
+      <tr><td>前日</td><td>40%</td></tr>
+      <tr><td>当日</td><td>50%</td></tr>
+      <tr><td>旅行開始後・無連絡不参加</td><td>100%</td></tr>
+    </table>
+    <div class="sample">記載例です。取消料と最少催行人員は既存プランのものを仮置きしています。</div>`,
+  yakkan:`<h5>標準旅行業約款について</h5>当協会は観光庁長官が定めた標準旅行業約款を使用しています。
+    実際の運用では、この位置に約款のPDFを表示します。
+    <h5>特約</h5>約款第1条2項に基づく特約を設ける場合は、旅行者の不利にならない範囲であることを明示します。
+    <div class="sample">実物のPDFに差し替える箇所です。</div>`,
+  privacy:`<h5>個人情報の取り扱い</h5>お申込みにあたってお預かりするお名前・ご連絡先は、
+    本商品の手配とご連絡、緊急時の対応のために使用します。
+    バス事業者・宿泊施設など、手配に必要な範囲でのみ提供します。
+    <div class="sample">協会のプライバシーポリシーに差し替える箇所です。</div>`,
+  guide:`<h5>当日のご案内</h5>集合場所、持ち物、雨天時の対応などを記載します。
+    <div class="sample">商品ごとに内容を編集できます。</div>`
+};
+
+/* ===== 商品（商品設定で編集できる） ===== */
+let PRODUCTS=[
+  {id:"lightup",eyebrow:"国内募集型企画旅行",name:"菊池渓谷ライトアップ セット",
+   sub:"往復バス・お食事券500円・温泉券",price:3500,days:[0,5,6],open:true,
+   slotTitle:"行きのバスを選ぶ",slots:["17:30","18:00","18:30","19:00"],stay:90,ret:true,
+   tickets:["bus","food","onsen"],
+   content:"菊池市民広場と菊池渓谷を結ぶ往復の貸切バス、お食事券500円分、温泉券。渓谷での滞在は90分です。",
+   termsLead:"お申込みの前に、次の書面をすべてご確認ください。選んだ日付・便・人数・金額が反映されます。",
+   agreeText:"上記の書面を読み、内容を理解しました",
+   expDays:0,expHour:22,
+   docs:[{t:"旅行条件書（取引条件説明書面）",b:"terms",must:true},
+         {t:"標準旅行業約款",b:"yakkan",must:false},
+         {t:"個人情報の取り扱い",b:"privacy",must:false}]},
+
+  {id:"kumiko",eyebrow:"体験プログラム",name:"龍紋組子 体験",
+   sub:"菊池渓谷ビジターセンター／所要60分",price:2500,days:[0,6],open:true,
+   slotTitle:"開始時間を選ぶ",slots:["10:00","11:30","13:30","15:00"],stay:60,ret:false,
+   tickets:["exp"],
+   content:"菊池渓谷ビジターセンターでの組子づくり体験。所要60分、材料費を含みます。",
+   termsLead:"お申込みの前に、次の書面をご確認ください。",
+   agreeText:"上記の書面を読み、内容を理解しました",
+   expDays:0,expHour:18,
+   docs:[{t:"体験プログラム 参加条件",b:"guide",must:true},
+         {t:"個人情報の取り扱い",b:"privacy",must:false}]},
+
+  {id:"wellness",eyebrow:"国内募集型企画旅行",name:"白金の森 ウエルネス滞在",
+   sub:"1泊2食付き・瞑想茶道体験",price:18000,days:[5,6],open:true,
+   slotTitle:"チェックインの時間を選ぶ",slots:["15:00","16:00","17:00"],stay:0,ret:false,
+   tickets:["stay","onsen"],
+   content:"白金の森での1泊2食付き宿泊と、瞑想茶道体験。渓谷でのマインドフルネスウォーキングを含みます。",
+   termsLead:"お申込みの前に、次の書面をすべてご確認ください。",
+   agreeText:"上記の書面を読み、内容を理解しました",
+   expDays:1,expHour:11,
+   docs:[{t:"旅行条件書（取引条件説明書面）",b:"terms",must:true},
+         {t:"標準旅行業約款",b:"yakkan",must:false},
+         {t:"個人情報の取り扱い",b:"privacy",must:false}]}
+];
+
+/* ===== 状態 ===== */
+const state={p:null,date:null,iso:null,slot:null,dep:null,back:null,qty:1,read:new Set(),agreed:false,consent:null};
+let orderSeq=0,orders=[],log=[],current=null,staffStop=STOPS[0],staffSlot=null,camTicket=null;
+const BASE="https://kikuchikanko.example";
+const $=id=>document.getElementById(id);
+function qrSvg(text,cell){const q=qrcode(0,"M");q.addData(text);q.make();return q.createSvgTag(cell,0);}
+function stamp(){const n=new Date();
+  return `${n.getMonth()+1}月${n.getDate()}日 ${String(n.getHours()).padStart(2,"0")}:${String(n.getMinutes()).padStart(2,"0")}`;}
+function yen(n){return "¥"+n.toLocaleString();}
+let TEST_EXPIRED=false;
+function expiryOf(p,iso){
+  const d=new Date(iso+"T00:00:00");
+  d.setDate(d.getDate()+(p.expDays||0));
+  d.setHours(p.expHour||23,0,0,0);
+  return d;
+}
+function expiryLabel(dt){
+  const wd=["日","月","火","水","木","金","土"];
+  return `${dt.getMonth()+1}月${dt.getDate()}日(${wd[dt.getDay()]}) ${String(dt.getHours()).padStart(2,"0")}:00 まで`;
+}
+function isExpired(o){return TEST_EXPIRED?true:(new Date()>new Date(o.expireAt));}
+
+/* ===== 商品一覧 ===== */
+function renderList(){
+  const w=$("plist");w.innerHTML="";
+  PRODUCTS.forEach(p=>{
+    const b=document.createElement("button");b.className="pcard";
+    if(!p.open)b.disabled=true;
+    b.innerHTML=`<div class="tag">${p.eyebrow}</div><h3>${p.name}</h3>
+      <div class="s">${p.sub}</div>
+      <div class="p"><span>${yen(p.price)}</span><small>${p.open?"おひとり":"受付を停止中"}</small></div>`;
+    b.onclick=()=>openProduct(p);w.appendChild(b);
+  });
+}
+function screen(id){["scList","scBook","scPay","scTicket"].forEach(x=>$(x).hidden=(x!==id));window.scrollTo(0,0);}
+function openProduct(p){
+  state.p=p;state.date=null;state.slot=null;state.qty=1;resetAgree();
+  $("hEyebrow").textContent=p.eyebrow;$("hName").textContent=p.name;
+  $("hPrice").textContent=yen(p.price);$("hSub").textContent=p.sub;
+  $("slotTitle").textContent=p.slotTitle;$("termsLead").textContent=p.termsLead;
+  $("agreeText").textContent=p.agreeText;
+  $("secSlot").hidden=true;$("secQty").hidden=true;$("secTerms").hidden=true;
+  buildDates(p);renderDocs();sync();
+  $("barR").textContent="予約";screen("scBook");
+}
+$("toList").onclick=()=>{screen("scList");$("barR").textContent="商品一覧";};
+$("backTop").onclick=()=>{screen("scList");$("barR").textContent="商品一覧";};
+
+/* ===== 日付・時間 ===== */
+function buildDates(p){
+  const w=$("dates");w.innerHTML="";const wd=["日","月","火","水","木","金","土"];
+  const d=new Date();let n=0,guard=0;
+  while(n<12&&guard<90){d.setDate(d.getDate()+1);guard++;
+    if(p.days.includes(d.getDay())){
+      const b=document.createElement("button");b.className="date";b.setAttribute("aria-pressed","false");
+      b.dataset.label=`${d.getMonth()+1}月${d.getDate()}日(${wd[d.getDay()]})`;
+      b.dataset.iso=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+      b.innerHTML=`<div class="d">${d.getDate()}</div><div class="w">${wd[d.getDay()]}</div>`;
+      b.onclick=()=>pickDate(b);w.appendChild(b);n++;}}
+}
+function pickDate(b){
+  document.querySelectorAll("#dates .date").forEach(x=>x.setAttribute("aria-pressed","false"));
+  b.setAttribute("aria-pressed","true");state.date=b.dataset.label;state.iso=b.dataset.iso;state.slot=null;
+  resetAgree();$("secSlot").hidden=false;buildSlots();sync();
+}
+function buildSlots(){
+  const p=state.p,w=$("slots");w.innerHTML="";
+  p.slots.forEach(t=>{
+    const b=document.createElement("button");b.className="slot";b.setAttribute("aria-pressed","false");
+    let back=null;
+    if(p.ret){
+      const[h,m]=t.split(":").map(Number);const d=new Date(2000,0,1,h,m+p.stay+10);
+      back=`${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`;
+      b.innerHTML=`<div class="lead">市民広場 発</div>
+        <div class="beam"><span class="t">${t}</span><span class="rail" data-stay="渓谷 ${p.stay}分"></span><span class="t">${back}</span></div>
+        <div class="auto">帰りは ${back} 発の便になります</div>`;
+    }else{
+      b.innerHTML=`<div class="lead">${p.slotTitle}</div><div class="plain">${t}</div>`+
+        (p.stay?`<div class="auto">所要 ${p.stay}分</div>`:"");
+    }
+    b.onclick=()=>{
+      document.querySelectorAll("#slots .slot").forEach(x=>x.setAttribute("aria-pressed","false"));
+      b.setAttribute("aria-pressed","true");
+      state.dep=t;state.back=back;
+      state.slot=p.ret?`行き ${t} 発 ／ 帰り ${back} 発`:`${t} 開始`;
+      resetAgree();$("secQty").hidden=false;$("secTerms").hidden=false;sync();
+    };
+    w.appendChild(b);
+  });
+}
+
+/* ===== 書面 ===== */
+function mustDocs(){return state.p.docs.map((d,i)=>({d,i})).filter(x=>x.d.must);}
+function renderDocs(){
+  const w=$("doclist");w.innerHTML="";
+  mustDocs().forEach(({d,i})=>{
+    const b=document.createElement("button");b.className="doclink"+(state.read.has(i)?" read":"");
+    b.innerHTML=`<span>${d.t}</span><span class="tag">${state.read.has(i)?"確認済み":"タップで表示"}</span>`;
+    b.onclick=()=>openDoc(i);w.appendChild(b);
+  });
+  const a=$("alwayslist");a.innerHTML="";
+  const others=state.p.docs.map((d,i)=>({d,i})).filter(x=>!x.d.must);
+  if(others.length){
+    a.innerHTML='<div class="alwayshead">いつでもご確認いただけます</div>';
+    others.forEach(({d,i})=>{
+      const b=document.createElement("button");b.className="alwayslink";
+      b.textContent=d.t;b.onclick=()=>openDoc(i);a.appendChild(b);
+    });
+  }
+  updateReadNote();
+}
+function updateReadNote(){
+  const list=mustDocs(),total=list.length;
+  const n=list.filter(x=>state.read.has(x.i)).length;
+  const note=$("readNote"),cb=$("agree");
+  if(n<total){
+    note.classList.remove("done");
+    note.textContent=total===1?"上の書面を開くと、同意にチェックできます。"
+      :`${total}件のうち ${n}件を確認しました。すべて開くと同意にチェックできます。`;
+    cb.disabled=true;$("agreeWrap").classList.add("locked");
+  }else{
+    note.classList.add("done");note.textContent="すべての書面を確認しました。";
+    cb.disabled=false;$("agreeWrap").classList.remove("locked");
+  }
+}
+function openDoc(i){
+  const d=state.p.docs[i];
+  $("sheetTitle").textContent=d.t;
+  $("sheetBody").innerHTML=DOCBODY[d.b]||"<p>内容が設定されていません。</p>";
+  const ap=$("docApplied");
+  if(ap){
+    ap.innerHTML=`<b>お申込み内容</b><br>${state.p.name}<br>${state.date||"—"}<br>${state.slot||"—"}<br>
+      ${state.qty}名 ／ 合計 ${(state.p.price*state.qty).toLocaleString()}円`;
+  }
+  const dc=$("docContent");if(dc)dc.textContent=state.p.content;
+  const dp=$("docPrice");if(dp)dp.textContent=`おひとり ${state.p.price.toLocaleString()}円（税込）。お支払いはクレジットカードのみです。`;
+  $("sheet").classList.add("open");
+  state.read.add(i);renderDocs();
+}
+$("closeDoc").onclick=()=>$("sheet").classList.remove("open");
+$("sheet").onclick=e=>{if(e.target===$("sheet"))$("sheet").classList.remove("open")};
+
+function resetAgree(){
+  state.read=new Set();state.agreed=false;state.consent=null;
+  const cb=$("agree");cb.checked=false;cb.disabled=true;
+  $("agreeWrap").classList.add("locked");
+  const box=$("consentLog");box.hidden=true;box.textContent="";
+  if(state.p)renderDocs();
+}
+$("agree").onchange=e=>{
+  state.agreed=e.target.checked;const box=$("consentLog");
+  if(state.agreed){
+    state.consent={ts:stamp(),qty:state.qty,amount:state.p.price*state.qty,docs:mustDocs().map(x=>x.d.t)};
+    box.hidden=false;
+    box.textContent=`同意を記録しました　${state.consent.ts}　${state.consent.qty}名 ／ ${state.consent.amount.toLocaleString()}円　書面${state.consent.docs.length}件`;
+  }else{state.consent=null;box.hidden=true;}
+  sync();
+};
+function changeQty(d){
+  const n=state.qty+d;if(n<1||n>10)return;
+  state.qty=n;resetAgree();sync();
+}
+$("plus").onclick=()=>changeQty(1);
+$("minus").onclick=()=>changeQty(-1);
+
+function sync(){
+  if(!state.p)return;
+  $("qtyV").textContent=state.qty;
+  $("total").textContent=yen(state.p.price*state.qty);
+  const ok=state.date&&state.slot&&state.agreed;
+  $("pay").disabled=!ok;
+  $("ctaNote").textContent=ok?"次の画面でお支払いをします":"日付と時間を選び、書面に同意すると進めます";
+}
+
+/* ===== 決済 ===== */
+$("pay").onclick=()=>{
+  const p=state.p;
+  $("payAmt").textContent=yen(p.price*state.qty);
+  $("payDesc").textContent=`${p.name} ／ ${state.date} ／ ${state.qty}名`;
+  $("payMeta").innerHTML=`metadata に渡す内容<br>product=${p.id}／date=${state.date}／slot=${state.dep}／qty=${state.qty}<br>consent=${state.consent?state.consent.ts:"—"}`;
+  $("barR").textContent="お支払い";screen("scPay");
+};
+$("doPay").onclick=()=>{
+  const p=state.p;orderSeq++;
+  const no="KK-"+new Date().toISOString().slice(0,10).replace(/-/g,"")+"-"+String(orderSeq).padStart(4,"0");
+  const tickets=[];
+  for(let i=1;i<=state.qty;i++)p.tickets.forEach(k=>tickets.push({id:`${no}-${i}-${k}`,kind:k,person:i,used:null,shop:null}));
+  const exp=expiryOf(p,state.iso);
+  current={no,pid:p.id,pname:p.name,date:state.date,slot:state.slot,dep:state.dep,back:state.back,
+    qty:state.qty,amount:p.price*state.qty,tickets,consent:state.consent,
+    expireAt:exp.toISOString(),expireLabel:expiryLabel(exp)};
+  orders.push(current);
+  $("tkMeta").innerHTML=`${p.name}<br>${state.date}　${state.slot}<br>${state.qty}名 ／ 注文番号 ${no}`+
+    (state.consent?`<br><span style="color:var(--amber)">書面に同意　${state.consent.ts}</span>`:"")+
+    `<br><span style="color:#F2C98A">有効期限　${current.expireLabel}</span>`;
+  $("barR").textContent="チケット";renderTickets();screen("scTicket");renderAdmin();
+};
+
+/* ===== チケット ===== */
+function renderTickets(){
+  const w=$("tickets");w.innerHTML="";
+  if(!current)return;
+  current.tickets.forEach(t=>{
+    const k=KINDS[t.kind];const el=document.createElement("div");
+    el.className="ticket"+(t.used?" used":"");
+    const exp=!t.used&&isExpired(current);
+    if(exp)el.className="ticket used";
+    el.innerHTML=`<div class="kind">${current.qty>1?`${t.person}人目 ・ `:""}${t.used?"使用済み":(exp?"期限切れ":"未使用")}</div>
+      <h4>${k.label}</h4><div class="val">${k.val}</div>
+      <div class="exp">有効期限　${current.expireLabel}</div>`;
+    if(t.used){
+      el.innerHTML+=`<div class="stamp"><b>${t.kind==="bus"?"受付済み":"もぎり済み"}</b><br>${t.shop}<br>${t.used}</div>`;
+      const b=document.createElement("button");b.className="scan sub";b.textContent="使用済みの画面を出す";
+      b.onclick=()=>showStub(t,current);el.appendChild(b);
+    }else if(exp){
+      const d=document.createElement("div");d.className="showstaff";
+      d.textContent="有効期限を過ぎているため、この券は使用できません。";el.appendChild(d);
+    }else if(k.mode==="staff"){
+      const b=document.createElement("button");b.className="scan";b.textContent="乗車QRを表示する";
+      b.onclick=()=>showBusQR(t);el.appendChild(b);
+      const d=document.createElement("div");d.className="showstaff";
+      d.textContent="係員がカメラで読み取ります。アプリは要りません。";el.appendChild(d);
+    }else{
+      const b=document.createElement("button");b.className="scan";b.textContent="お店のQRを読み取る";
+      b.onclick=()=>openCam(t);el.appendChild(b);
+    }
+    w.appendChild(el);
+  });
+}
+
+/* ===== 乗車QR ===== */
+function showBusQR(t){
+  $("busQrArea").innerHTML=qrSvg(`${BASE}/ride?t=${t.id}`,6);
+  $("busQrMeta").innerHTML=`${current.date}<br>${current.slot}<br>${current.qty>1?t.person+"人目 ／ ":""}${current.no}`;
+  $("busQr").classList.add("open");
+}
+$("busQrClose").onclick=()=>$("busQr").classList.remove("open");
+
+/* ===== 半券 ===== */
+function showStub(t,o){
+  const k=KINDS[t.kind];
+  $("stubKind").textContent=k.label;
+  if(t.kind==="bus"){
+    $("stubTitle").textContent=`${o.dep} の便　受付済み`;
+    $("stubWhere").textContent="受付場所";$("stubShop").textContent=t.shop||"";
+    $("stubAmt").textContent=o.back?`帰りは ${o.back} 発の便です`:"";
+    $("stubSeal").textContent="受付済";
+    $("stubNote").textContent="お帰りの便まで、この画面を残しておいてください";
+  }else{
+    $("stubTitle").textContent=k.label+"　"+k.val;
+    $("stubWhere").textContent="ご利用先";$("stubShop").textContent=t.shop||"";
+    $("stubAmt").textContent=k.amount?`${k.amount.toLocaleString()}円分としてご利用いただけます`:k.val;
+    $("stubSeal").textContent="使用済";
+    $("stubNote").textContent=k.note||"この画面をお見せください";
+  }
+  $("stubTime").textContent=t.used||"";
+  $("stubFoot").innerHTML=`${o.pname}<br>${o.date}　${o.qty>1?t.person+"人目":""}<br>注文番号 ${o.no}`;
+  $("stub").classList.add("open");
+}
+$("stubClose").onclick=()=>$("stub").classList.remove("open");
+
+/* ===== カメラ・番号入力 ===== */
+function openCam(t){
+  const k=KINDS[t.kind];camTicket=t;
+  $("camTitle").textContent=k.label+"を使う";
+  const f=$("finder");f.innerHTML="";
+  k.shops.forEach(([code,name])=>{
+    const b=document.createElement("button");b.className="poster";
+    b.innerHTML=`<div class="p-qr">${qrSvg(`${BASE}/use?shop=${code}`,3)}</div>
+      <div class="p-name">${name}</div><div class="p-code">${code}</div>`;
+    b.onclick=()=>consume(t,name,code);f.appendChild(b);
+  });
+  $("manualCode").value="";$("manualCode").placeholder="例 "+k.shops[0][0];
+  $("manualErr").textContent="";
+  $("cam").classList.add("open");
+}
+$("camClose").onclick=()=>$("cam").classList.remove("open");
+function submitManual(){
+  const inp=$("manualCode"),err=$("manualErr");
+  const code=inp.value.trim().toUpperCase();
+  if(!code){err.textContent="番号を入力してください";return;}
+  const k=KINDS[camTicket.kind];
+  const hit=k.shops.find(([c])=>c===code);
+  if(!hit){
+    let other=null;
+    Object.values(KINDS).forEach(kk=>{if(kk.shops&&kk.shops.find(([c])=>c===code))other=kk.label;});
+    err.textContent=other?`${code} は${other}の番号です`:`${code} という番号の掲示はありません`;
+    return;
+  }
+  err.textContent="";inp.value="";consume(camTicket,hit[1],hit[0]);
+}
+$("manualGo").onclick=submitManual;
+$("manualCode").addEventListener("keydown",e=>{if(e.key==="Enter")submitManual();});
+function consume(t,shop,code){
+  if(isExpired(current)){
+    $("manualErr").textContent="有効期限を過ぎているため使用できません（"+current.expireLabel+"）";
+    return;
+  }
+  const ts=stamp();t.used=ts;t.shop=shop;
+  log.unshift({ts,no:current.no,pname:current.pname,person:t.person,kind:KINDS[t.kind].label,
+    shop,code,amount:KINDS[t.kind].amount||0});
+  $("cam").classList.remove("open");renderTickets();renderAdmin();showStub(t,current);
+}
+
+/* ===== 係員 ===== */
+function slotsFor(stop){
+  const p=PRODUCTS.find(x=>x.id==="lightup");
+  if(stop===STOPS[0])return p.slots.slice();
+  return p.slots.map(t=>{const[h,m]=t.split(":").map(Number);const d=new Date(2000,0,1,h,m+p.stay+10);
+    return `${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`;});
+}
+function renderSlotSel(){
+  const w=$("slotsel");w.innerHTML="";const list=slotsFor(staffStop);
+  if(!list.includes(staffSlot))staffSlot=list[0];
+  list.forEach(t=>{const b=document.createElement("button");b.textContent=t;
+    b.setAttribute("aria-pressed",String(t===staffSlot));
+    b.onclick=()=>{staffSlot=t;renderSlotSel();$("staffResult").innerHTML="";};w.appendChild(b);});
+}
+(function(){
+  const w=$("stopsel");
+  STOPS.forEach(s=>{const b=document.createElement("button");b.textContent=s;
+    b.setAttribute("aria-pressed",String(s===staffStop));
+    b.onclick=()=>{staffStop=s;[...w.children].forEach(c=>c.setAttribute("aria-pressed",String(c.textContent===s)));
+      $("stopName").textContent=s;$("staffResult").innerHTML="";renderSlotSel();};
+    w.appendChild(b);});
+  $("stopName").textContent=staffStop;renderSlotSel();
+})();
+$("staffScan").onclick=()=>{
+  const box=$("staffResult"),all=[];
+  orders.forEach(o=>o.tickets.filter(t=>t.kind==="bus").forEach(t=>all.push({o,t})));
+  if(!all.length){box.innerHTML=`<div class="result ng"><div class="big">券がありません</div>
+    <div class="small">お客様の画面でライトアップを申し込んでからお試しください</div></div>`;return;}
+  box.innerHTML=`<div class="pick"><div class="h">試作用：どのお客様のQRをかざしたか選んでください</div></div>`;
+  const wrap=box.querySelector(".pick");
+  all.forEach(({o,t})=>{
+    const b=document.createElement("button");
+    b.innerHTML=`${o.no}　${o.qty>1?t.person+"人目":""}<br><span style="color:#C3D6CC">${o.date}　${o.slot}${t.used?"　【使用済み】":""}</span>`;
+    b.onclick=()=>readBus(o,t);wrap.appendChild(b);});
+};
+function readBus(o,t){
+  const box=$("staffResult");
+  const expected=staffStop===STOPS[0]?o.dep:o.back;
+  if(isExpired(o)){box.innerHTML=`<div class="result ng"><div class="big">期限切れです</div>
+    <div class="small">有効期限 ${o.expireLabel}<br>${o.no}</div></div>`;return;}
+  if(t.used){box.innerHTML=`<div class="result ng"><div class="big">使用済みです</div>
+    <div class="small">${t.shop}　${t.used}<br>${o.no}</div></div>`;return;}
+  if(expected!==staffSlot){box.innerHTML=`<div class="result ng"><div class="big">便が違います</div>
+    <div class="small">このお客様は ${expected} の便です<br>いまの担当便は ${staffSlot}<br>${o.no}</div></div>`;return;}
+  const ts=stamp();t.used=ts;t.shop=`${staffStop} ${staffSlot}`;
+  log.unshift({ts,no:o.no,pname:o.pname,person:t.person,kind:"往復バス乗車券",shop:`${staffStop} ${staffSlot}`,code:"BUS",amount:0});
+  box.innerHTML=`<div class="result ok"><div class="big">乗車 OK</div>
+    <div class="small">${o.no}　${o.qty>1?t.person+"人目":""}<br>${o.date}　${o.slot}<br>${staffStop} ${staffSlot}　${ts}</div></div>`;
+  if(current)renderTickets();renderAdmin();
+}
+
+/* ===== 管理 ===== */
+function renderAdmin(){
+  const issued=orders.reduce((a,o)=>a+o.tickets.length,0);
+  const used=orders.reduce((a,o)=>a+o.tickets.filter(t=>t.used).length,0);
+  const sales=orders.reduce((a,o)=>a+o.amount,0);
+  const settle=log.reduce((a,l)=>a+(l.amount||0),0);
+  const busN=log.filter(l=>l.code==="BUS").length;
+  $("rideCount").textContent=busN;
+  $("kpis").innerHTML=`
+    <div class="kpi"><div class="l">申込</div><div class="v">${orders.length}<small> 件</small></div></div>
+    <div class="kpi"><div class="l">売上</div><div class="v">${sales.toLocaleString()}<small> 円</small></div></div>
+    <div class="kpi"><div class="l">発行</div><div class="v">${issued}<small> 枚</small></div></div>
+    <div class="kpi"><div class="l">消費</div><div class="v">${used}<small> 枚</small></div></div>
+    <div class="kpi"><div class="l">加盟店への精算</div><div class="v">${settle.toLocaleString()}<small> 円</small></div></div>
+    <div class="kpi"><div class="l">バス乗車</div><div class="v">${busN}<small> 名</small></div></div>`;
+
+  const rows=[];
+  Object.entries(KINDS).forEach(([kk,k])=>{
+    if(!k.shops)return;
+    k.shops.forEach(([code,name])=>{
+      const hits=log.filter(l=>l.code===code);
+      rows.push({code,name,kind:k.label,n:hits.length,amt:hits.reduce((a,l)=>a+(l.amount||0),0)});
+    });
+  });
+  $("shopTbl").innerHTML=`<table><tr><th>番号</th><th>加盟店・施設</th><th>券種</th><th>枚数</th><th>精算額</th></tr>`+
+    rows.map(r=>`<tr class="${r.n?"":"zero"}"><td>${r.code}</td><td>${r.name}</td><td>${r.kind}</td>
+      <td class="num">${r.n}</td><td class="num">${r.amt?r.amt.toLocaleString()+" 円":"—"}</td></tr>`).join("")+
+    `<tfoot><tr><td colspan="3">合計</td><td class="num">${rows.reduce((a,r)=>a+r.n,0)}</td>
+      <td class="num">${settle.toLocaleString()} 円</td></tr></tfoot></table>`;
+
+  const bm={};STOPS.forEach(s=>bm[s]=0);
+  log.filter(l=>l.code==="BUS").forEach(l=>{const k=l.shop.split(" ")[0];if(k in bm)bm[k]++;});
+  $("busTbl").innerHTML=`<table><tr><th>乗り場</th><th>読み取り人数</th></tr>`+
+    STOPS.map(s=>`<tr class="${bm[s]?"":"zero"}"><td>${s}</td><td class="num">${bm[s]}</td></tr>`).join("")+`</table>`;
+
+  $("consentTbl").innerHTML=orders.length?
+    `<table><tr><th>注文番号</th><th>商品</th><th>同意した日時</th><th>確認した書面</th><th>同意した内容と申込内容</th></tr>`+
+    orders.map(o=>{const c=o.consent;const ok=c&&c.qty===o.qty&&c.amount===o.amount;
+      return `<tr><td>${o.no}</td><td>${o.pname}</td><td>${c?c.ts:"—"}</td>
+        <td>${c?c.docs.join("<br>"):"—"}</td>
+        <td>${c?`${c.qty}名 ${c.amount.toLocaleString()}円 → ${o.qty}名 ${o.amount.toLocaleString()}円　<span class="${ok?"ok-badge":"ng-badge"}">${ok?"一致":"不一致"}</span>`:"—"}</td></tr>`;}).join("")+`</table>`
+    :`<div class="empty">まだ申込はありません</div>`;
+
+  $("log").innerHTML=log.length?
+    `<table><tr><th>日時</th><th>商品</th><th>券種</th><th>読み取ったQR</th><th>注文番号</th></tr>`+
+    log.map(l=>`<tr><td>${l.ts}</td><td>${l.pname}</td><td>${l.kind}</td>
+      <td>${l.code}　${l.shop}</td><td>${l.no}-${l.person}</td></tr>`).join("")+`</table>`
+    :`<div class="empty">お客様の画面で申込と消費を試すと、ここに記録が残ります</div>`;
+}
+
+/* ===== 商品設定 ===== */
+let editId=PRODUCTS[0].id;
+function renderProdTabs(){
+  const w=$("prodtabs");w.innerHTML="";
+  PRODUCTS.forEach(p=>{const b=document.createElement("button");b.textContent=p.name;
+    b.setAttribute("aria-pressed",String(p.id===editId));
+    b.onclick=()=>{editId=p.id;renderProdTabs();renderEditor();};w.appendChild(b);});
+}
+function renderEditor(){
+  const p=PRODUCTS.find(x=>x.id===editId);
+  $("editorForm").innerHTML=`
+    <div class="frow"><label>商品名</label><input id="eName" value="${p.name}"></div>
+    <div class="frow"><label>肩書き（ジャンル表示）</label><input id="eEye" value="${p.eyebrow}"></div>
+    <div class="frow"><label>ひとこと説明</label><input id="eSub" value="${p.sub}"></div>
+    <div class="frow"><label>料金（おひとり・円）</label><input id="ePrice" type="number" value="${p.price}"></div>
+    <div class="frow"><label>書面に載せる内容</label><textarea id="eContent">${p.content}</textarea></div>
+    <div class="frow"><label>書面の前に出す案内文</label><textarea id="eLead">${p.termsLead}</textarea></div>
+    <div class="frow"><label>同意チェックの文言</label><input id="eAgree" value="${p.agreeText}"></div>
+    <div class="frow"><label>チケットの有効期限</label>
+      <div style="display:flex;gap:8px;align-items:center">
+        <select id="eExpDays"><option value="0">利用日 当日</option><option value="1">利用日の翌日</option><option value="2">利用日の2日後</option></select>
+        <select id="eExpHour"></select>
+        <span style="font-size:12px;color:var(--dim)">まで</span>
+      </div></div>
+    <div class="frow"><label>確認してもらう書面（上から順に表示されます）</label><div id="eDocs"></div>
+      <button class="adddoc" id="eAddDoc">＋ 書面を追加する</button></div>`;
+  const ds=$("eExpDays");ds.value=String(p.expDays||0);
+  const hs=$("eExpHour");hs.innerHTML="";
+  for(let h=6;h<=23;h++){const o=document.createElement("option");o.value=h;o.textContent=String(h).padStart(2,"0")+":00";hs.appendChild(o);}
+  hs.value=String(p.expHour||22);
+  renderDocEditor(p);
+  $("eAddDoc").onclick=()=>{p.docs.push({t:"新しい書面",b:"guide"});renderEditor();};
+  $("saveMsg").textContent="";
+}
+function renderDocEditor(p){
+  const w=$("eDocs");w.innerHTML="";
+  p.docs.forEach((d,i)=>{
+    const row=document.createElement("div");row.className="docrow";
+    row.innerHTML=`<input value="${d.t}" data-i="${i}" class="docname">
+      <select class="docmust" data-i="${i}">
+        <option value="1"${d.must?" selected":""}>同意が必要</option>
+        <option value="0"${d.must?"":" selected"}>掲示のみ</option>
+      </select>`;
+    const del=document.createElement("button");del.textContent="削除";
+    del.onclick=()=>{
+      if(d.must&&p.docs.filter(x=>x.must).length<=1){alert("同意が必要な書面は1件以上残してください");return;}
+      p.docs.splice(i,1);renderEditor();};
+    row.appendChild(del);w.appendChild(row);
+  });
+}
+$("saveProd").onclick=()=>{
+  const p=PRODUCTS.find(x=>x.id===editId);
+  p.name=$("eName").value.trim()||p.name;
+  p.eyebrow=$("eEye").value.trim();
+  p.sub=$("eSub").value.trim();
+  p.price=Math.max(0,parseInt($("ePrice").value,10)||p.price);
+  p.content=$("eContent").value.trim();
+  p.termsLead=$("eLead").value.trim();
+  p.agreeText=$("eAgree").value.trim();
+  p.expDays=parseInt($("eExpDays").value,10)||0;
+  p.expHour=parseInt($("eExpHour").value,10)||22;
+  document.querySelectorAll(".docname").forEach(inp=>{
+    const i=+inp.dataset.i;if(p.docs[i])p.docs[i].t=inp.value.trim()||p.docs[i].t;});
+  document.querySelectorAll(".docmust").forEach(sel=>{
+    const i=+sel.dataset.i;if(p.docs[i])p.docs[i].must=(sel.value==="1");});
+  if(!p.docs.some(d=>d.must))p.docs[0].must=true;
+  renderProdTabs();renderList();
+  if(state.p&&state.p.id===p.id){openProduct(p);}
+  $("saveMsg").textContent="保存しました。お客様の画面に反映されています。";
+};
+
+/* ===== タブ ===== */
+document.querySelectorAll(".tabs button").forEach(b=>{
+  b.onclick=()=>{
+    document.querySelectorAll(".tabs button").forEach(x=>x.setAttribute("aria-selected","false"));
+    b.setAttribute("aria-selected","true");
+    $("viewCustomer").hidden=(b.dataset.view!=="customer");
+    $("viewStaff").hidden=(b.dataset.view!=="staff");
+    $("viewAdmin").hidden=(b.dataset.view!=="admin");
+    $("viewEditor").hidden=(b.dataset.view!=="editor");
+    window.scrollTo(0,0);
+  };
+});
+$("expToggle").onclick=()=>{
+  TEST_EXPIRED=!TEST_EXPIRED;
+  $("expToggle").textContent=TEST_EXPIRED?"試作用：期限内に戻す":"試作用：期限切れの状態にする";
+  renderTickets();$("staffResult").innerHTML="";
+};
+$("resetAll").onclick=()=>{orders=[];log=[];orderSeq=0;current=null;
+  $("staffResult").innerHTML="";renderAdmin();screen("scList");$("barR").textContent="商品一覧";};
+
+renderList();renderAdmin();renderProdTabs();renderEditor();
+
+/* ===== LINEミニアプリ化 =====
+   1. LINE Developers でミニアプリチャネルを作り、LIFF ID をここに貼る
+   2. 画面サイズは Full、Scan QR は オン にしておく
+   3. このファイルを HTTPS のURLに置き、そのURLをエンドポイントに指定する
+   LIFF_ID が空のままなら、普通のWebページとしてそのまま動きます。 */
+const LIFF_ID="";
+if(LIFF_ID){
+  const sdk=document.createElement("script");
+  sdk.src="https://static.line-scdn.net/liff/edge/2/sdk.js";
+  sdk.onload=()=>{
+    liff.init({liffId:LIFF_ID}).then(()=>{
+      // ここでお客様のLINEユーザーIDが取れる（本番では申込と紐づける）
+      if(liff.isLoggedIn()){
+        liff.getProfile().then(pf=>{console.log("LINEユーザー",pf.displayName);});
+      }
+    }).catch(e=>console.log("liff.init 失敗",e));
+  };
+  document.head.appendChild(sdk);
+}
+</script>
+</body>
+</html>
